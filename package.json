@@ -6,6 +6,7 @@
     "dev": "next dev",
     "clean": "node -e \"for (const dir of ['.next', '.next-prod', '.next-runtime']) { try { require('fs').rmSync(dir, { recursive: true, force: true }); } catch (error) { if (error && !['ENOENT', 'EPERM'].includes(error.code)) throw error; } }\"",
     "build": "next build --webpack",
+    "prebuild": "prisma generate",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
