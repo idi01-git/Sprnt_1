@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import type { AdminRole } from '@/generated/prisma/client'
 import { checkRateLimit, AUTH_RATE_LIMIT, API_RATE_LIMIT, SEARCH_RATE_LIMIT } from '@/lib/rate-limit'
+import { applyCorsHeaders, createCorsPreflightResponse } from '@/lib/cors'
 
 // ============================================================================
 // PROXY FUNCTION (Node.js Runtime)
@@ -21,6 +22,12 @@ function getClientIp(request: NextRequest): string {
 
 export async function proxy(request: NextRequest) {
     const path = request.nextUrl.pathname
+    const isApiRoute = path.startsWith('/api/')
+
+    // Browser CORS preflight should not go through auth/rate-limit checks.
+    if (isApiRoute && request.method === 'OPTIONS') {
+        return createCorsPreflightResponse(request)
+    }
 
     // ============================================================================
     // PUBLIC ROUTES (Skip authentication)
@@ -57,7 +64,7 @@ export async function proxy(request: NextRequest) {
         if (process.env.NODE_ENV === 'development') {
             response.headers.set('X-RateLimit-Remaining', '999')
         }
-        return response
+        return isApiRoute ? applyCorsHeaders(request, response) : response
     }
 
     // ============================================================================
@@ -81,14 +88,14 @@ export async function proxy(request: NextRequest) {
     if (process.env.NODE_ENV === 'development') {
         const response = await handleRouteAuth(request, path)
         response.headers.set('X-RateLimit-Remaining', '999')
-        return response
+        return isApiRoute ? applyCorsHeaders(request, response) : response
     }
 
     const { limited, remaining, retryAfterMs } = checkRateLimit(rateLimitKey, rateLimitConfig)
 
     if (limited) {
         const retryAfterSeconds = Math.ceil(retryAfterMs / 1000)
-        return NextResponse.json(
+        const response = NextResponse.json(
             {
                 success: false,
                 data: null,
@@ -106,11 +113,12 @@ export async function proxy(request: NextRequest) {
                 },
             },
         )
+        return isApiRoute ? applyCorsHeaders(request, response) : response
     }
 
     const response = await handleRouteAuth(request, path)
     response.headers.set('X-RateLimit-Remaining', String(remaining))
-    return response
+    return isApiRoute ? applyCorsHeaders(request, response) : response
 }
 
 /**
