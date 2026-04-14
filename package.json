@@ -10,6 +10,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "prisma:generate": "prisma generate",
+    "postinstall": "prisma generate",
     "prisma:validate": "prisma validate",
     "test": "npm run typecheck"
   },
