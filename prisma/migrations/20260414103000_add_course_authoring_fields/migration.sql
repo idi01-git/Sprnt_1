@@ -1,0 +1,5 @@
+ALTER TABLE "courses"
+ADD COLUMN IF NOT EXISTS "total_days" INTEGER NOT NULL DEFAULT 7;
+
+ALTER TABLE "course_modules"
+ADD COLUMN IF NOT EXISTS "transcript_text" TEXT;

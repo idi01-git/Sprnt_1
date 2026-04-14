@@ -1,0 +1,181 @@
+"use client";
+
+import { useEffect, useState } from 'react';
+import { 
+  Users, 
+  Search, 
+  UserPlus, 
+  UserMinus, 
+  ShieldCheck, 
+  ShieldAlert,
+  Shield,
+  ShieldOff,
+  Eye,
+  Loader2,
+  Mail,
+  Calendar,
+  Link,
+} from 'lucide-react';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
+import { getAdminUsers, AdminUser, suspendAdminUser, activateAdminUser } from '@/lib/api';
+
+const poppins: React.CSSProperties = { fontFamily: "'Poppins', sans-serif" };
+
+export default function UserManager() {
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'suspended'>('all');
+  const [processingId, setProcessingId] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [search, statusFilter]);
+
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const response = await getAdminUsers({ search, status: statusFilter === 'all' ? undefined : statusFilter, limit: 50 });
+      if (response.success && response.data) {
+        setUsers(Array.isArray(response.data.users) ? response.data.users : []);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const filteredUsers = users.filter(user => 
+    user.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleToggleStatus = async (userId: string, currentStatus: 'active' | 'suspended') => {
+    setProcessingId(userId);
+    try {
+      const res = currentStatus === 'active' 
+        ? await suspendAdminUser(userId) 
+        : await activateAdminUser(userId);
+      if (res.success) {
+        setUsers(users.map(u => u.id === userId ? { ...u, status: currentStatus === 'active' ? 'suspended' : 'active' } : u));
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  if (loading && users.length === 0) return <div className="flex h-64 items-center justify-center font-medium">Loading user database...</div>;
+
+  return (
+    <div className="space-y-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900">User Manager</h1>
+          <p className="text-gray-500 text-sm mt-1">Manage enrollments and view student activity.</p>
+        </div>
+        <div className="relative w-full sm:w-72">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <input 
+            type="text" 
+            placeholder="Search students..." 
+            className="w-full rounded-lg border border-gray-200 py-2.5 pl-10 pr-4 text-sm outline-none ring-indigo-500 focus:ring-2 transition-all shadow-sm text-gray-900"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      </div>
+
+      {/* Users Table */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        {loading ? (
+          <div className="flex items-center justify-center h-64">
+            <Loader2 className="w-8 h-8 text-purple-600 animate-spin" />
+          </div>
+        ) : users.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-400" style={poppins}>No users found</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-100">
+                <tr>
+                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600" style={poppins}>User</th>
+                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600" style={poppins}>Study Level</th>
+                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600" style={poppins}>Status</th>
+                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600" style={poppins}>Verified</th>
+                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600" style={poppins}>Joined</th>
+                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600" style={poppins}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user.id} className="border-b border-gray-50 hover:bg-gray-50">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-white font-bold">
+                          {(user.name || user.email).charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-gray-900" style={poppins}>{user.name || '-'}</p>
+                          <p className="text-xs text-gray-500" style={poppins}>{user.email}</p>
+                          {user.phone && <p className="text-xs text-gray-400" style={poppins}>{user.phone}</p>}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-gray-600" style={poppins}>{user.studyLevel?.replace(/_/g, ' ') || '-'}</span>
+                      <div className="text-xs text-gray-400 mt-1" style={poppins}>
+                        {user.enrollmentsCount || 0} enrollments
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${user.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`} style={poppins}>
+                        {user.status}
+                      </span>
+                      <div className="text-xs text-gray-400 mt-1" style={poppins}>
+                        ₹{user.walletBalance?.toFixed(2) || '0.00'} balance
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      {user.emailVerified ? (
+                        <span className="text-green-600"><Shield className="w-4 h-4" /></span>
+                      ) : (
+                        <span className="text-gray-400"><ShieldOff className="w-4 h-4" /></span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-gray-500" style={poppins}>
+                      {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-'}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <Link href={`/admin/users/${user.id}`} className="p-2 hover:bg-gray-100 rounded-lg">
+                          <Eye className="w-4 h-4 text-gray-600" />
+                        </Link>
+                        <button
+                          onClick={() => handleToggleStatus(user.id, user.status)}
+                          className={`p-2 rounded-lg ${user.status === 'active' ? 'hover:bg-red-50' : 'hover:bg-green-50'}`}
+                        >
+                          {user.status === 'active' ? (
+                            <ShieldOff className="w-4 h-4 text-red-600" />
+                          ) : (
+                            <Shield className="w-4 h-4 text-green-600" />
+                          )}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
