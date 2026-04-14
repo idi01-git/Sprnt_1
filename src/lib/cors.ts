@@ -35,14 +35,23 @@ function getAllowedOriginFromRequest(request: NextRequest): string | null {
     return allowedOrigins.has(requestOrigin) ? requestOrigin : null
 }
 
-// Backward-compatible exports for older route handlers.
+/**
+ * Backward-compatible export for older route handlers.
+ */
 export function getCorsOrigin(request: NextRequest): string | null {
     return getAllowedOriginFromRequest(request)
 }
 
-export function createCorsHeaders(input: NextRequest | string): HeadersInit {
+/**
+ * Generates CORS headers as a plain object.
+ * Returns Record<string, string> to ensure compatibility with utility functions 
+ * like serverError() that expect a standard object with string indexes.
+ */
+export function createCorsHeaders(input: NextRequest | string): Record<string, string> {
     const allowedOrigin =
         typeof input === 'string' ? input : getAllowedOriginFromRequest(input)
+    
+    // Return an empty object if no origin is allowed
     if (!allowedOrigin) return {}
 
     const requestedHeaders =
@@ -60,6 +69,9 @@ export function createCorsHeaders(input: NextRequest | string): HeadersInit {
     }
 }
 
+/**
+ * Applies CORS headers to an existing NextResponse object.
+ */
 export function applyCorsHeaders(request: NextRequest, response: NextResponse): NextResponse {
     const allowedOrigin = getAllowedOriginFromRequest(request)
     if (!allowedOrigin) return response
@@ -77,8 +89,12 @@ export function applyCorsHeaders(request: NextRequest, response: NextResponse): 
     return response
 }
 
+/**
+ * Creates a response for OPTIONS preflight requests.
+ */
 export function createCorsPreflightResponse(request: NextRequest): NextResponse {
     const allowedOrigin = getAllowedOriginFromRequest(request)
+    
     if (!allowedOrigin) {
         return NextResponse.json(
             {
