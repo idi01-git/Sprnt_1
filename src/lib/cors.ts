@@ -40,12 +40,15 @@ export function getCorsOrigin(request: NextRequest): string | null {
     return getAllowedOriginFromRequest(request)
 }
 
-export function createCorsHeaders(request: NextRequest): HeadersInit {
-    const allowedOrigin = getAllowedOriginFromRequest(request)
+export function createCorsHeaders(input: NextRequest | string): HeadersInit {
+    const allowedOrigin =
+        typeof input === 'string' ? input : getAllowedOriginFromRequest(input)
     if (!allowedOrigin) return {}
 
     const requestedHeaders =
-        request.headers.get('access-control-request-headers') ?? DEFAULT_ALLOWED_HEADERS
+        typeof input === 'string'
+            ? DEFAULT_ALLOWED_HEADERS
+            : input.headers.get('access-control-request-headers') ?? DEFAULT_ALLOWED_HEADERS
 
     return {
         'Access-Control-Allow-Origin': allowedOrigin,
