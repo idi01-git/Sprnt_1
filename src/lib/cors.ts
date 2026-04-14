@@ -35,6 +35,28 @@ function getAllowedOriginFromRequest(request: NextRequest): string | null {
     return allowedOrigins.has(requestOrigin) ? requestOrigin : null
 }
 
+// Backward-compatible exports for older route handlers.
+export function getCorsOrigin(request: NextRequest): string | null {
+    return getAllowedOriginFromRequest(request)
+}
+
+export function createCorsHeaders(request: NextRequest): HeadersInit {
+    const allowedOrigin = getAllowedOriginFromRequest(request)
+    if (!allowedOrigin) return {}
+
+    const requestedHeaders =
+        request.headers.get('access-control-request-headers') ?? DEFAULT_ALLOWED_HEADERS
+
+    return {
+        'Access-Control-Allow-Origin': allowedOrigin,
+        'Access-Control-Allow-Credentials': 'true',
+        'Access-Control-Allow-Methods': DEFAULT_ALLOWED_METHODS,
+        'Access-Control-Allow-Headers': requestedHeaders,
+        'Access-Control-Max-Age': DEFAULT_MAX_AGE_SECONDS,
+        Vary: 'Origin',
+    }
+}
+
 export function applyCorsHeaders(request: NextRequest, response: NextResponse): NextResponse {
     const allowedOrigin = getAllowedOriginFromRequest(request)
     if (!allowedOrigin) return response
