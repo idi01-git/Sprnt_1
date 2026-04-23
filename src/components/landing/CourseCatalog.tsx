@@ -3,16 +3,22 @@
 import { useState, useEffect } from 'react';
 import { Loader2, AlertCircle, Sparkles, Filter } from 'lucide-react';
 import { CourseCard } from '@/components/course/CourseCard';
-import { getCourses, getBranches, type Course, type Branch } from '@/lib/api';
+import { createCourseRequest, getCourses, getBranches, type Course, type Branch } from '@/lib/api';
 import StatsLoop from './StatsLoop';
 
 interface CourseCatalogProps {
   initialCourses?: Course[];
   initialBranches?: Branch[];
   enrolledCourseIds?: string[];
+  hideEnrolledCourses?: boolean;
 }
 
-export function CourseCatalog({ initialCourses, initialBranches, enrolledCourseIds = [] }: CourseCatalogProps) {
+export function CourseCatalog({
+  initialCourses,
+  initialBranches,
+  enrolledCourseIds = [],
+  hideEnrolledCourses = false,
+}: CourseCatalogProps) {
   const [courses, setCourses] = useState<Course[]>(initialCourses || []);
   const [branches, setBranches] = useState<Branch[]>(initialBranches || []);
   const [loading, setLoading] = useState(!initialCourses);
@@ -23,24 +29,29 @@ export function CourseCatalog({ initialCourses, initialBranches, enrolledCourseI
   const [activeCategory, setActiveCategory] = useState('All');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [showRequestModal, setShowRequestModal] = useState(false);
+  const [submittingRequest, setSubmittingRequest] = useState(false);
+  const [requestMessage, setRequestMessage] = useState<{ ok: boolean; text: string } | null>(null);
+  const [requestForm, setRequestForm] = useState({
+    name: '',
+    requestedCourse: '',
+    description: '',
+    stream: '',
+    email: '',
+  });
 
   const categories = ['All', 'Chemical', 'Civil', 'Mechanical', 'Electrical', 'Electronic', 'CSE/IT'];
 
-  // Filter out enrolled courses - use enrolledIds (persisted from server) for client-side fetches
-  const filteredCourses = enrolledIds.length > 0
-    ? (activeCategory === 'All'
-      ? courses.filter(c => !enrolledIds.includes(c.courseId))
-      : courses.filter(c =>
-          !enrolledIds.includes(c.courseId) &&
-          (c.affiliatedBranch.toLowerCase().includes(activeCategory.toLowerCase().split(' ')[0]) ||
-          activeCategory.toLowerCase().includes(c.affiliatedBranch.toLowerCase()))
-        ))
-    : (activeCategory === 'All'
-      ? courses
-      : courses.filter(course =>
+  const filteredCourses = activeCategory === 'All'
+    ? courses.filter(course => !hideEnrolledCourses || !enrolledIds.includes(course.courseId))
+    : courses.filter(course => {
+        const branchMatches =
           course.affiliatedBranch.toLowerCase().includes(activeCategory.toLowerCase().split(' ')[0]) ||
-          activeCategory.toLowerCase().includes(course.affiliatedBranch.toLowerCase())
-        ));
+          activeCategory.toLowerCase().includes(course.affiliatedBranch.toLowerCase());
+
+        if (!branchMatches) return false;
+        return !hideEnrolledCourses || !enrolledIds.includes(course.courseId);
+      });
 
   useEffect(() => {
     // Only fetch if we don't have initial data - enrolledCourseIds is not a dependency
@@ -108,8 +119,115 @@ export function CourseCatalog({ initialCourses, initialBranches, enrolledCourseI
     }
   };
 
+  const handleRequestCourse = async () => {
+    setSubmittingRequest(true);
+    setRequestMessage(null);
+
+    try {
+      const response = await createCourseRequest(requestForm);
+      if (!response.success) {
+        setRequestMessage({ ok: false, text: response.error?.message || 'Failed to submit course request.' });
+        return;
+      }
+
+      setRequestMessage({ ok: true, text: 'Course request sent successfully.' });
+      setRequestForm({
+        name: '',
+        requestedCourse: '',
+        description: '',
+        stream: '',
+        email: '',
+      });
+      setTimeout(() => {
+        setShowRequestModal(false);
+        setRequestMessage(null);
+      }, 1200);
+    } finally {
+      setSubmittingRequest(false);
+    }
+  };
+
   return (
     <section id="courses" className="py-24 relative overflow-hidden bg-white">
+      {showRequestModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl">
+            <div className="mb-5">
+              <h3 className="text-2xl font-bold text-gray-900" style={{ fontFamily: "'Outfit', sans-serif" }}>Request a Course</h3>
+              <p className="mt-1 text-sm text-gray-500" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                Send your request directly to suggestion@sprintern.com.
+              </p>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <input
+                value={requestForm.name}
+                onChange={(event) => setRequestForm((current) => ({ ...current, name: event.target.value }))}
+                placeholder="Name"
+                className="w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-purple-500"
+                style={{ fontFamily: "'Poppins', sans-serif" }}
+              />
+              <input
+                value={requestForm.email}
+                onChange={(event) => setRequestForm((current) => ({ ...current, email: event.target.value }))}
+                placeholder="Your Email Address"
+                className="w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-purple-500"
+                style={{ fontFamily: "'Poppins', sans-serif" }}
+              />
+              <input
+                value={requestForm.requestedCourse}
+                onChange={(event) => setRequestForm((current) => ({ ...current, requestedCourse: event.target.value }))}
+                placeholder="Requested Course"
+                className="w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-purple-500"
+                style={{ fontFamily: "'Poppins', sans-serif" }}
+              />
+              <input
+                value={requestForm.stream}
+                onChange={(event) => setRequestForm((current) => ({ ...current, stream: event.target.value }))}
+                placeholder="Stream"
+                className="w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-purple-500"
+                style={{ fontFamily: "'Poppins', sans-serif" }}
+              />
+              <textarea
+                value={requestForm.description}
+                onChange={(event) => setRequestForm((current) => ({ ...current, description: event.target.value }))}
+                placeholder="Description"
+                rows={5}
+                className="sm:col-span-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-purple-500"
+                style={{ fontFamily: "'Poppins', sans-serif" }}
+              />
+            </div>
+
+            {requestMessage && (
+              <div className={`mt-4 rounded-2xl px-4 py-3 text-sm ${requestMessage.ok ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`} style={{ fontFamily: "'Poppins', sans-serif" }}>
+                {requestMessage.text}
+              </div>
+            )}
+
+            <div className="mt-6 flex gap-3">
+              <button
+                onClick={() => {
+                  setShowRequestModal(false);
+                  setRequestMessage(null);
+                }}
+                className="flex-1 rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-700"
+                style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => void handleRequestCourse()}
+                disabled={submittingRequest || !requestForm.name.trim() || !requestForm.email.trim() || !requestForm.requestedCourse.trim() || !requestForm.description.trim() || !requestForm.stream.trim()}
+                className="flex-1 rounded-2xl bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-3 text-sm text-white disabled:opacity-60"
+                style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}
+              >
+                {submittingRequest ? 'Sending...' : 'Submit Request'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Enhanced Background Effects */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-purple-50/50 to-transparent" />
@@ -200,6 +318,7 @@ export function CourseCatalog({ initialCourses, initialBranches, enrolledCourseI
                   key={course.id} 
                   course={course} 
                   index={index}
+                  purchased={enrolledIds.includes(course.courseId)}
                   // Mark first course as popular for demo
                   popular={index === 0 && activeCategory === 'All'}
                 />
@@ -230,6 +349,7 @@ export function CourseCatalog({ initialCourses, initialBranches, enrolledCourseI
                 Can't find your specialization? We're constantly adding new courses!
               </p>
               <button
+                onClick={() => setShowRequestModal(true)}
                 className="group px-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 transition-all hover:scale-105 active:scale-95"
               >
                 <span

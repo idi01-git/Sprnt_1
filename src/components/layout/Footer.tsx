@@ -1,40 +1,40 @@
 'use client';
 
-import { Mail, Phone, MapPin, Instagram, Linkedin, Twitter, Youtube } from 'lucide-react';
+import { Mail, Phone, MapPin, Instagram, Linkedin } from 'lucide-react';
 import Link from 'next/link';
 
 const footerLinks = {
   product: [
-    { name: 'Courses', href: '#courses' },
-    { name: 'How It Works', href: '#how-it-works' },
-    { name: 'Pricing', href: '#pricing' },
-    { name: 'Verify Certificate', href: '#verify' }
+    { name: 'Courses', href: '/courses' },
+    { name: 'How It Works', href: '/#roadmap' },
+    { name: 'Pricing', href: '/courses' },
+    { name: 'Verify Certificate', href: '/verify' }
   ],
   company: [
-    { name: 'About Us', href: '#about' },
-    { name: 'Careers', href: '#careers' },
-    { name: 'Blog', href: '#blog' },
-    { name: 'Press Kit', href: '#press' }
+    { name: 'About Us', href: '/' },
+    { name: 'Careers', href: '/courses' },
+    { name: 'Blog', href: '/' },
+    { name: 'Press Kit', href: '/' }
   ],
   support: [
-    { name: 'Help Center', href: '#support' },
-    { name: 'Contact Us', href: '#contact' },
-    { name: 'FAQ', href: '#faq' },
-    { name: 'Community', href: '#community' }
+    { name: 'Help Center', href: '/verify' },
+    { name: 'Contact Us', href: '/' },
+    { name: 'FAQ', href: '/#roadmap' },
+    { name: 'Community', href: '/courses' }
   ],
   legal: [
-    { name: 'Terms of Service', href: '#terms' },
-    { name: 'Privacy Policy', href: '#privacy' },
-    { name: 'Cookie Policy', href: '#cookies' },
-    { name: 'Refund Policy', href: '#refund' }
+    { name: 'Terms of Service', href: '/' },
+    { name: 'Privacy Policy', href: '/' },
+    { name: 'Cookie Policy', href: '/' },
+    { name: 'Refund Policy', href: '/' }
   ]
 };
 
 const socialLinks = [
-  { icon: Instagram, href: '#', color: 'from-pink-500 to-rose-500' },
-  { icon: Linkedin, href: '#', color: 'from-blue-600 to-blue-700' },
-  { icon: Twitter, href: '#', color: 'from-sky-400 to-blue-500' },
-  { icon: Youtube, href: '#', color: 'from-red-500 to-red-600' }
+  { icon: Instagram, href: 'https://www.instagram.com/idi01_insta?igsh=c2ljZzNkYmpyMm55', color: 'from-pink-500 to-rose-500' },
+  { icon: Linkedin, href: 'https://www.linkedin.com/company/sprintern/', color: 'from-blue-600 to-blue-700' },
+  // { icon: Twitter, href: '#', color: 'from-sky-400 to-blue-500' },
+  // { icon: Youtube, href: '#', color: 'from-red-500 to-red-600' }
 ];
 
 export function Footer() {
@@ -81,6 +81,8 @@ export function Footer() {
                 <a
                   key={index}
                   href={social.href}
+                  target="_blank"
+                  rel="noreferrer"
                   className="w-11 h-11 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all group hover:scale-110 hover:-translate-y-0.5 active:scale-95"
                 >
                   <social.icon className="w-5 h-5 text-white" />
@@ -110,7 +112,7 @@ export function Footer() {
               <ul className="space-y-3">
                 {links.map((link, index) => (
                   <li key={index}>
-                    <a
+                    <Link
                       href={link.href}
                       className="text-gray-400 hover:text-white transition-all inline-block relative group hover:translate-x-1"
                       style={{ 
@@ -121,7 +123,7 @@ export function Footer() {
                     >
                       {link.name}
                       <span className="absolute bottom-0 left-0 w-0 h-px bg-linear-to-r from-purple-500 to-blue-500 group-hover:w-full transition-all duration-300" />
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>

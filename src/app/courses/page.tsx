@@ -83,6 +83,7 @@ export default async function CoursesPage({
             initialCourses={initialCourses}
             initialBranches={initialBranches}
             enrolledCourseIds={enrolledCourseIds}
+            hideEnrolledCourses
           />
         </Suspense>
       </div>

@@ -24,6 +24,11 @@ export async function PUT(
         if (!submission) return notFound('Submission')
 
         const { metric1, metric2, metric3, metric4, metric5, adminNotes } = parsed.data
+        const normalizedMetric1 = metric1 / 2
+        const normalizedMetric2 = metric2 / 2
+        const normalizedMetric3 = metric3 / 2
+        const normalizedMetric4 = metric4 / 2
+        const normalizedMetric5 = metric5 / 2
 
         // Weighted grading as per PRD:
         // - Simulation Accuracy: 25%
@@ -32,11 +37,11 @@ export async function PUT(
         // - Sensitivity Analysis: 15%
         // - Documentation: 15%
         const finalGrade = (
-            metric1 * 0.25 +
-            metric2 * 0.25 +
-            metric3 * 0.20 +
-            metric4 * 0.15 +
-            metric5 * 0.15
+            normalizedMetric1 * 0.25 +
+            normalizedMetric2 * 0.25 +
+            normalizedMetric3 * 0.20 +
+            normalizedMetric4 * 0.15 +
+            normalizedMetric5 * 0.15
         )
 
         let gradeCategory: 'Distinction' | 'First_Class' | 'Pass' | 'Fail'
@@ -48,11 +53,11 @@ export async function PUT(
         const updated = await prisma.submission.update({
             where: { id: submissionId },
             data: {
-                metric1SimulationAccuracy: metric1,
-                metric2LogicMethodology: metric2,
-                metric3IndustrialOutput: metric3,
-                metric4SensitivityAnalysis: metric4,
-                metric5Documentation: metric5,
+                metric1SimulationAccuracy: normalizedMetric1,
+                metric2LogicMethodology: normalizedMetric2,
+                metric3IndustrialOutput: normalizedMetric3,
+                metric4SensitivityAnalysis: normalizedMetric4,
+                metric5Documentation: normalizedMetric5,
                 finalGrade,
                 gradeCategory,
                 adminNotes,

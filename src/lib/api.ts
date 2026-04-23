@@ -449,6 +449,21 @@ export async function createSubmission(request: CreateSubmissionRequest): Promis
   });
 }
 
+export interface CourseRequestPayload {
+  name: string;
+  requestedCourse: string;
+  description: string;
+  stream: string;
+  email: string;
+}
+
+export async function createCourseRequest(payload: CourseRequestPayload): Promise<ApiResponse<{ success: boolean }>> {
+  return fetchApi<{ success: boolean }>('/api/course-requests', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
 // ============ ADMIN APIs ============
 
 // Admin Dashboard
@@ -567,13 +582,65 @@ export interface AdminUserDetail {
   phone: string | null;
   dob: string | null;
   studyLevel: string | null;
+  avatarUrl: string | null;
+  upiId: string | null;
+  referralCode: string | null;
+  referredBy: string | null;
   createdAt: string;
-  status: string;
+  updatedAt: string;
+  status: 'active' | 'suspended';
   emailVerified: boolean;
+  walletBalance: number;
+  counts: {
+    enrollments: number;
+    submissions: number;
+    referralsSent: number;
+    sessions: number;
+    certificates: number;
+  };
+  referralStats: {
+    totalReferrals: number;
+    totalEarned: number;
+  };
+  certificates: {
+    id: string;
+    certificateId: string;
+    studentName: string;
+    courseName: string;
+    collegeName: string;
+    issuedAt: string;
+    isRevoked: boolean;
+    revocationReason: string | null;
+  }[];
+  sessions: {
+    id: string;
+    expiresAt: string;
+    isExpired: boolean;
+  }[];
 }
 
 export async function getAdminUserDetail(userId: string): Promise<ApiResponse<{ user: AdminUserDetail }>> {
   return fetchApi<{ user: AdminUserDetail }>(`/api/admin/users/${userId}`);
+}
+
+export interface UpdateAdminUserRequest {
+  name?: string;
+  email?: string;
+  phone?: string | null;
+  dob?: string | null;
+  studyLevel?: string | null;
+  avatarUrl?: string | null;
+  upiId?: string | null;
+  referralCode?: string | null;
+  emailVerified?: boolean;
+  status?: 'active' | 'suspended';
+}
+
+export async function updateAdminUser(userId: string, data: UpdateAdminUserRequest): Promise<ApiResponse<{ user: Partial<AdminUserDetail> }>> {
+  return fetchApi<{ user: Partial<AdminUserDetail> }>(`/api/admin/users/${userId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  });
 }
 
 export async function suspendAdminUser(userId: string): Promise<ApiResponse<{ success: boolean }>> {
@@ -724,8 +791,38 @@ export async function getAdminSubmissionDetail(submissionId: string): Promise<Ap
   return fetchApi<{ submission: any }>(`/api/admin/submissions/${submissionId}`);
 }
 
-export async function approveSubmission(submissionId: string): Promise<ApiResponse<{ success: boolean }>> {
-  return fetchApi<{ success: boolean }>(`/api/admin/submissions/${submissionId}/approve`, { method: 'POST' });
+export interface ApproveSubmissionRequest {
+  certificateStudentName: string;
+  certificateCollegeName: string;
+  fullName: string;
+  dob?: string | null;
+  collegeName: string;
+  branch: string;
+  graduationYear: number;
+  collegeIdLink: string;
+  certificatePdfUrl: string;
+}
+
+export interface ApproveSubmissionResponse {
+  certificateId: string;
+  grade: string;
+  studentName: string;
+  collegeName: string;
+  courseName: string;
+  qrCodeData: string;
+  certificateUrl: string;
+  certificatePdfUrl: string | null;
+  alreadyIssued: boolean;
+}
+
+export async function approveSubmission(
+  submissionId: string,
+  data: ApproveSubmissionRequest,
+): Promise<ApiResponse<ApproveSubmissionResponse>> {
+  return fetchApi<ApproveSubmissionResponse>(`/api/admin/submissions/${submissionId}/approve`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
 }
 
 export async function rejectSubmission(submissionId: string, notes: string): Promise<ApiResponse<{ success: boolean }>> {
@@ -863,22 +960,120 @@ export interface AdminPromocodesResponse {
 // Admin Certificates
 export interface AdminCertificate {
   id: string;
+  enrollmentId: string;
   certificateId: string;
   studentName: string;
   studentEmail: string;
+  collegeName: string;
   courseName: string;
   courseId: string;
   branch: string | null;
+  grade: string;
   issueDate: string;
-  enrolledAt: string;
+  isRevoked: boolean;
+  revocationReason: string | null;
+  revokedAt: string | null;
+  certificateUrl: string;
 }
 
 export interface AdminCertificatesResponse {
   certificates: AdminCertificate[];
 }
 
-export async function getAdminCertificates(): Promise<ApiResponse<AdminCertificatesResponse>> {
-  return fetchApi<AdminCertificatesResponse>('/api/admin/certificates');
+export async function getAdminCertificates(params?: {
+  search?: string;
+  status?: 'valid' | 'revoked' | 'all';
+}): Promise<ApiResponse<AdminCertificatesResponse>> {
+  const searchParams = new URLSearchParams();
+  if (params?.search) searchParams.set('search', params.search);
+  if (params?.status) searchParams.set('status', params.status);
+  const query = searchParams.toString();
+  return fetchApi<AdminCertificatesResponse>(`/api/admin/certificates${query ? `?${query}` : ''}`);
+}
+
+export interface AdminCertificateDetail {
+  id: string;
+  certificateId: string;
+  studentName: string;
+  collegeName: string;
+  courseName: string;
+  grade: string;
+  certificateUrl: string;
+  certificatePdfUrl: string | null;
+  qrCodeData: string;
+  issuedAt: string;
+  isRevoked: boolean;
+  revocationReason: string | null;
+  revokedAt: string | null;
+  revokedBy: string | null;
+  enrollmentId: string;
+  completedAt: string | null;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string | null;
+  };
+  course: {
+    id: string;
+    courseId: string;
+    courseName: string;
+    affiliatedBranch: string;
+  };
+  approvalSnapshot: {
+    fullName: string | null;
+    dob: string | null;
+    collegeName: string;
+    branch: string | null;
+    graduationYear: number | null;
+    collegeIdLink: string | null;
+  };
+  submission: {
+    id: string;
+    reviewStatus: string;
+    adminNotes: string | null;
+    submittedAt: string;
+    reviewStartedAt: string | null;
+    reviewCompletedAt: string | null;
+    fullName: string;
+    dob: string | null;
+    collegeName: string;
+    collegeIdLink: string;
+    branch: string;
+    graduationYear: number;
+    driveLink: string;
+    metric1SimulationAccuracy: number | null;
+    metric2LogicMethodology: number | null;
+    metric3IndustrialOutput: number | null;
+    metric4SensitivityAnalysis: number | null;
+    metric5Documentation: number | null;
+    finalGrade: number | null;
+    gradeCategory: string | null;
+  } | null;
+  verificationHistory: {
+    id: string;
+    scannedAt: string;
+    ipAddress: string | null;
+    userAgent: string | null;
+  }[];
+}
+
+export async function getAdminCertificateDetail(certificateId: string): Promise<ApiResponse<{ certificate: AdminCertificateDetail }>> {
+  return fetchApi<{ certificate: AdminCertificateDetail }>(`/api/admin/certificates/${certificateId}`);
+}
+
+export async function updateAdminCertificate(certificateId: string, certificatePdfUrl: string): Promise<ApiResponse<{ certificateId: string; certificatePdfUrl: string }>> {
+  return fetchApi<{ certificateId: string; certificatePdfUrl: string }>(`/api/admin/certificates/${certificateId}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ certificatePdfUrl }),
+  });
+}
+
+export async function revokeAdminCertificate(certificateId: string, reason: string): Promise<ApiResponse<{ certificateId: string; isRevoked: boolean; revocationReason: string }>> {
+  return fetchApi<{ certificateId: string; isRevoked: boolean; revocationReason: string }>(`/api/admin/certificates/${certificateId}/revoke`, {
+    method: 'POST',
+    body: JSON.stringify({ reason }),
+  });
 }
 
 export async function getAdminPromocodes(params?: {
@@ -920,7 +1115,7 @@ export interface UserProfile {
   name: string;
   email: string;
   phone: string | null;
-  emailVerified: string | null; // ISO date string when verified, null if not
+  emailVerified: boolean;
   avatarUrl: string | null;
   dob: string | null;
   studyLevel: string | null;
@@ -969,6 +1164,27 @@ export async function revokeSession(sessionId: string): Promise<ApiResponse<{ su
   });
 }
 
+export interface UserCertificate {
+  id: string;
+  certificateId: string;
+  studentName: string;
+  collegeName: string;
+  courseName: string;
+  grade: string;
+  branch: string | null;
+  dateOfBirth: string | null;
+  finalScore: number | null;
+  issuedAt: string;
+  certificateUrl: string;
+  certificatePdfUrl: string | null;
+  isRevoked: boolean;
+  revocationReason: string | null;
+}
+
+export async function getUserCertificates(): Promise<ApiResponse<{ certificates: UserCertificate[] }>> {
+  return fetchApi<{ certificates: UserCertificate[] }>('/api/users/certificates');
+}
+
 // ─── Admin User Sub-resources ──────────────────────────────────────────────
 
 export async function getAdminUserEnrollments(userId: string): Promise<ApiResponse<{ enrollments: any[] }>> {
@@ -985,6 +1201,10 @@ export async function getAdminUserReferrals(userId: string): Promise<ApiResponse
 
 export async function getAdminUserTransactions(userId: string): Promise<ApiResponse<{ transactions: any[] }>> {
   return fetchApi<{ transactions: any[] }>(`/api/admin/users/${userId}/transactions`);
+}
+
+export async function getAdminUserCertificates(userId: string): Promise<ApiResponse<any>> {
+  return fetchApi<any>(`/api/admin/users/${userId}/certificates`);
 }
 
 export async function adminManualEnroll(userId: string, courseId: string): Promise<ApiResponse<{ success: boolean }>> {

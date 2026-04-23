@@ -39,7 +39,8 @@ export default function AdminCourseEditorPage({ params }: { params: Promise<{ co
       setParamsLoaded(true);
     }
   }, [resolvedParams]);
-  const [tabData, setTabData] = useState<any>(null);
+  const [tabData, setTabData] = useState<any[]>([]);
+  const [statsData, setStatsData] = useState<Record<string, unknown> | null>(null);
   const [tabLoading, setTabLoading] = useState(false);
 
   const [form, setForm] = useState({
@@ -115,21 +116,28 @@ export default function AdminCourseEditorPage({ params }: { params: Promise<{ co
   async function fetchEnrollments() {
     setTabLoading(true);
     const res = await getAdminCourseEnrollments(courseId, { limit: 50 });
-    setTabData(res.success ? res.data?.enrollments : []);
+    setTabData(Array.isArray(res.data?.enrollments) ? res.data.enrollments : []);
     setTabLoading(false);
   }
 
   async function fetchStats() {
     setTabLoading(true);
     const res = await getAdminCourseStats(courseId);
-    setTabData(res.success ? res.data?.stats : null);
+    const nextStats = res.success && res.data?.stats && typeof res.data.stats === 'object'
+      ? res.data.stats as Record<string, unknown>
+      : null;
+    setStatsData(nextStats);
     setTabLoading(false);
   }
 
   async function fetchModules() {
     setTabLoading(true);
     const res = await getAdminCourseModules(courseId);
-    if (res.success && res.data) setModules(res.data.modules);
+    if (res.success && Array.isArray(res.data?.modules)) {
+      setModules(res.data.modules);
+    } else {
+      setModules([]);
+    }
     setTabLoading(false);
   }
 
@@ -509,7 +517,7 @@ export default function AdminCourseEditorPage({ params }: { params: Promise<{ co
           {tab === 'Enrollments' && (
             tabLoading ? (
               <div className="animate-pulse space-y-3">{[...Array(5)].map((_, i) => <div key={i} className="h-14 bg-gray-100 rounded-xl" />)}</div>
-            ) : !tabData || tabData.length === 0 ? (
+            ) : tabData.length === 0 ? (
               <div className="text-center py-12"><p className="text-gray-400" style={poppins}>No enrollments yet</p></div>
             ) : (
               <div className="overflow-x-auto">
@@ -518,7 +526,7 @@ export default function AdminCourseEditorPage({ params }: { params: Promise<{ co
                     {['Student', 'Email', 'Progress', 'Enrolled'].map(h => <th key={h} className="text-left py-3 px-4 text-gray-500 font-semibold" style={poppins}>{h}</th>)}
                   </tr></thead>
                   <tbody>
-                    {tabData.map((e: any, i: number) => (
+                    {(Array.isArray(tabData) ? tabData : []).map((e: any, i: number) => (
                       <tr key={i} className="border-b border-gray-50 hover:bg-gray-50">
                         <td className="py-3 px-4 font-semibold text-gray-900" style={poppins}>{e.userName}</td>
                         <td className="py-3 px-4 text-gray-500" style={poppins}>{e.userEmail}</td>
@@ -535,11 +543,11 @@ export default function AdminCourseEditorPage({ params }: { params: Promise<{ co
           {tab === 'Stats' && (
             tabLoading ? (
               <div className="animate-pulse grid sm:grid-cols-2 lg:grid-cols-4 gap-4">{[...Array(4)].map((_, i) => <div key={i} className="h-24 bg-gray-100 rounded-2xl" />)}</div>
-            ) : !tabData ? (
+            ) : !statsData ? (
               <div className="text-center py-12"><p className="text-gray-400" style={poppins}>No stats available</p></div>
             ) : (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                {Object.entries(tabData).map(([key, val], i) => (
+                {Object.entries(statsData).map(([key, val], i) => (
                   <div key={i} className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
                     <p className="text-xs text-gray-500 mb-1 capitalize" style={poppins}>{key.replace(/([A-Z])/g, ' $1').trim()}</p>
                     <p className="text-2xl font-bold text-gray-900" style={{ ...outfit, fontWeight: 800 }}>{String(val)}</p>

@@ -2,6 +2,23 @@ import nodemailer from 'nodemailer'
 import { appEnv, mailEnv } from '@/lib/env'
 
 let transporter: nodemailer.Transporter | null = null
+let mailConfigurationChecked = false
+
+function checkMailConfiguration() {
+  if (mailConfigurationChecked) {
+    return
+  }
+
+  mailConfigurationChecked = true
+
+  if (!mailEnv.isConfigured) {
+    console.warn('[Email] SMTP configuration is incomplete. Email sending is disabled until SMTP_HOST, SMTP_USER, and SMTP_PASSWORD are set.')
+  }
+
+  if (!appEnv.appUrl) {
+    console.warn('[Email] NEXT_PUBLIC_APP_URL is missing. Email links may be invalid.')
+  }
+}
 
 function getTransporter() {
   if (transporter) {
@@ -30,9 +47,12 @@ interface EmailOptions {
   text?: string
   from?: string
   replyTo?: string
+  attachments?: nodemailer.SendMailOptions['attachments']
 }
 
-export async function sendEmail({ to, subject, html, text, from, replyTo }: EmailOptions) {
+export async function sendEmail({ to, subject, html, text, from, replyTo, attachments }: EmailOptions) {
+  checkMailConfiguration()
+
   if (!mailEnv.isConfigured) {
     console.warn('[Email] SMTP is not configured. Skipping email send.', { to, subject })
     return { success: false, skipped: true as const, reason: 'mail_not_configured' }
@@ -46,6 +66,7 @@ export async function sendEmail({ to, subject, html, text, from, replyTo }: Emai
       subject,
       text: text || (html ? undefined : ''),
       html,
+      attachments,
     })
     console.info('[Email] Sent:', { to, subject, messageId: result.messageId })
     return { success: true, messageId: result.messageId }
@@ -130,8 +151,31 @@ export async function sendCertificateEmail(
   name: string,
   courseName: string,
   grade: string,
-  certificateId: string
+  certificateId: string,
+  options?: {
+    certificatePdfUrl?: string | null
+  },
 ) {
+  let attachments: nodemailer.SendMailOptions['attachments']
+
+  if (options?.certificatePdfUrl) {
+    try {
+      const response = await fetch(options.certificatePdfUrl)
+      if (!response.ok) {
+        throw new Error(`Failed to fetch certificate PDF (${response.status})`)
+      }
+
+      const arrayBuffer = await response.arrayBuffer()
+      attachments = [{
+        filename: `${certificateId}.pdf`,
+        content: Buffer.from(arrayBuffer),
+        contentType: 'application/pdf',
+      }]
+    } catch (error) {
+      console.error('[Email] Failed to fetch certificate PDF for attachment:', error)
+    }
+  }
+
   return sendEmail({
     to: email,
     subject: `Congratulations! Your Certificate for ${courseName}`,
@@ -154,7 +198,7 @@ export async function sendCertificateEmail(
                 <p style="margin: 0; color: #1f2937; font-size: 24px; font-weight: 700; letter-spacing: 2px;">${certificateId}</p>
               </div>
               <p style="color: #6b7280; font-size: 14px; line-height: 1.6; text-align: center;">
-                Your official PDF certificate will be emailed to you separately by the Sprintern team.
+                ${options?.certificatePdfUrl ? 'Your official PDF certificate is attached to this email.' : 'Your certificate record is now available on your Sprintern account.'}
               </p>
               <div style="text-align: center; margin: 32px 0;">
                 <a href="https://sprintern.in/dashboard" style="display: inline-block; background: linear-gradient(135deg, #9333ea, #3b82f6); color: white; padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: 600;">
@@ -166,7 +210,8 @@ export async function sendCertificateEmail(
         </body>
       </html>
     `,
-    text: `Congratulations ${name}! You've completed ${courseName} with grade ${grade}. Your Certificate ID is: ${certificateId}. The official PDF will be emailed separately.`,
+    text: `Congratulations ${name}! You've completed ${courseName} with grade ${grade}. Your Certificate ID is: ${certificateId}.${options?.certificatePdfUrl ? ' Your certificate PDF is attached.' : ' Your certificate is now available on your Sprintern account.'}`,
+    attachments,
   })
 }
 
@@ -311,6 +356,45 @@ export async function sendPasswordResetEmail(email: string, name: string, resetT
       </html>
     `,
     text: `Hi ${name}, reset your password by visiting: ${resetUrl}. This link expires in 1 hour. If you didn't request this, ignore this email.`,
+  })
+}
+
+export async function sendCourseRequestEmail(input: {
+  name: string
+  requestedCourse: string
+  description: string
+  stream: string
+  email: string
+}) {
+  return sendEmail({
+    to: 'suggestion@sprintern.com',
+    replyTo: input.email,
+    subject: `Course Request: ${input.requestedCourse}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head><meta charset="utf-8"></head>
+        <body style="margin: 0; padding: 0; font-family: 'Poppins', Arial, sans-serif; background-color: #f9fafb;">
+          <div style="max-width: 640px; margin: 0 auto; padding: 40px 20px;">
+            <div style="background: white; border-radius: 16px; padding: 32px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+              <h2 style="color: #1f2937; font-size: 24px; margin: 0 0 20px;">New Course Request</h2>
+              <p style="color: #6b7280; font-size: 14px; margin: 0 0 20px;">A user submitted a new course request from the website.</p>
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr><td style="padding: 10px 0; color: #6b7280; font-size: 14px;">Name</td><td style="padding: 10px 0; color: #111827; font-size: 14px; font-weight: 600;">${input.name}</td></tr>
+                <tr><td style="padding: 10px 0; color: #6b7280; font-size: 14px;">Email</td><td style="padding: 10px 0; color: #111827; font-size: 14px; font-weight: 600;">${input.email}</td></tr>
+                <tr><td style="padding: 10px 0; color: #6b7280; font-size: 14px;">Requested Course</td><td style="padding: 10px 0; color: #111827; font-size: 14px; font-weight: 600;">${input.requestedCourse}</td></tr>
+                <tr><td style="padding: 10px 0; color: #6b7280; font-size: 14px;">Stream</td><td style="padding: 10px 0; color: #111827; font-size: 14px; font-weight: 600;">${input.stream}</td></tr>
+              </table>
+              <div style="margin-top: 20px; padding: 16px; border-radius: 12px; background: #f3f4f6;">
+                <p style="margin: 0 0 8px; color: #6b7280; font-size: 13px;">Description</p>
+                <p style="margin: 0; color: #111827; font-size: 14px; line-height: 1.6;">${input.description}</p>
+              </div>
+            </div>
+          </div>
+        </body>
+      </html>
+    `,
+    text: `New course request\nName: ${input.name}\nEmail: ${input.email}\nRequested Course: ${input.requestedCourse}\nStream: ${input.stream}\nDescription: ${input.description}`,
   })
 }
 

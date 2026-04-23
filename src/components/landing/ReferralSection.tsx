@@ -1,10 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Wallet, Users, Gift, Star, TrendingUp } from 'lucide-react';
 
 const ReferralSection = () => {
   const [hoveredStep, setHoveredStep] = useState<number | null>(null);
+  const router = useRouter();
 
   const steps = [
     {
@@ -329,6 +331,7 @@ const ReferralSection = () => {
         {/* Enhanced CTA Button */}
         <div className="text-center animate-fade-in animation-delay-800">
           <button
+            onClick={() => router.push('/dashboard/referrals')}
             className="group relative px-12 py-5 rounded-2xl overflow-hidden transition-all duration-300 hover:scale-105 active:scale-95 inline-block"
             style={{
               fontFamily: "'Poppins', sans-serif",

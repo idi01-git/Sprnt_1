@@ -397,18 +397,14 @@ export function Timeline() {
 
               {/* Enhanced 3D CTA Button */}
               <button
-                onClick={async () => {
-                  try {
-                    const res = await fetch('/api/auth/session', { credentials: 'include' });
-                    const data = await res.json().catch(() => null);
-                    if (data?.success && data?.data?.user) {
-                      window.location.href = '/courses';
-                    } else {
-                      window.location.href = '/register';
-                    }
-                  } catch {
-                    window.location.href = '/register';
+                onClick={() => {
+                  const coursesSection = document.getElementById('courses');
+                  if (coursesSection) {
+                    coursesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    return;
                   }
+
+                  window.location.href = '/courses';
                 }}
                 className="relative group/btn inline-block"
               >

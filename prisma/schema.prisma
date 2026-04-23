@@ -83,6 +83,14 @@ enum GradeCategory {
   @@map("grade_category")
 }
 
+enum CertGrade {
+  Distinction
+  First_Class @map("First Class")
+  Pass
+
+  @@map("cert_grade")
+}
+
 enum ReferralStatus {
   pending
   completed
@@ -165,6 +173,7 @@ model User {
   emailVerificationTokens EmailVerificationToken[]
   enrollments        Enrollment[]
   submissions        Submission[]
+  certificates       Certificate[]
   referralsSent      Referral[]          @relation("referralsSent")
   referralsReceived  Referral[]          @relation("referralsReceived")
   withdrawalRequests WithdrawalRequest[]
@@ -255,6 +264,7 @@ model Admin {
   grantedEnrollments   Enrollment[]
   adminTransactions    Transaction[]
   updatedSettings      SystemSetting[]
+  revokedCertificates  Certificate[]     @relation("certificateRevokedBy")
 
   @@index([email])
   @@index([isActive])
@@ -296,6 +306,7 @@ model Course {
 
   modules     CourseModule[]
   enrollments Enrollment[]
+  certificates Certificate[]
 
   @@index([slug])
   @@index([courseId])
@@ -375,6 +386,7 @@ model Enrollment {
   adminGranter    Admin?           @relation(fields: [adminGrantedBy], references: [id], onDelete: SetNull)
   dailyProgress   DailyProgress[]
   submission      Submission?
+  certificate     Certificate?
   transactions    Transaction[]
   promocodeUsages PromocodeUsage[]
 
@@ -453,6 +465,57 @@ model Submission {
   @@index([reviewStatus])
   @@index([assignedAdminId])
   @@map("submissions")
+}
+
+model Certificate {
+  id               String        @id @default(cuid())
+  certificateId    String        @unique @map("certificate_id") @db.VarChar(100)
+  enrollmentId     String        @unique @map("enrollment_id")
+  userId           String        @map("user_id")
+  courseId         String        @map("course_id")
+  studentName      String        @map("student_name") @db.VarChar(200)
+  collegeName      String        @map("college_name") @db.VarChar(300)
+  courseName       String        @map("course_name") @db.VarChar(200)
+  grade            CertGrade
+  certificateUrl   String        @map("certificate_url")
+  certificatePdfUrl String?      @map("certificate_pdf_url")
+  qrCodeData       String        @map("qr_code_data")
+  fullName         String?       @map("full_name") @db.VarChar(200)
+  dob              DateTime?     @map("dob") @db.Date
+  branch           String?       @db.VarChar(50)
+  graduationYear   Int?          @map("graduation_year")
+  collegeIdLink    String?       @map("college_id_link")
+  isRevoked        Boolean       @default(false) @map("is_revoked")
+  revokedAt        DateTime?     @map("revoked_at") @db.Timestamptz()
+  revokedBy        String?       @map("revoked_by")
+  revocationReason String?       @map("revocation_reason")
+  issuedAt         DateTime      @default(now()) @map("issued_at") @db.Timestamptz()
+
+  enrollment      Enrollment                @relation(fields: [enrollmentId], references: [id], onDelete: Restrict)
+  user            User                      @relation(fields: [userId], references: [id], onDelete: Restrict)
+  course          Course                    @relation(fields: [courseId], references: [id], onDelete: Restrict)
+  revokedByAdmin  Admin?                    @relation("certificateRevokedBy", fields: [revokedBy], references: [id], onDelete: SetNull)
+  verifications   CertificateVerification[]
+
+  @@index([certificateId])
+  @@index([userId])
+  @@index([courseId])
+  @@index([isRevoked])
+  @@map("certificates")
+}
+
+model CertificateVerification {
+  id            String   @id @default(cuid())
+  certificateId String   @map("certificate_id") @db.VarChar(100)
+  scannedAt     DateTime @default(now()) @map("scanned_at") @db.Timestamptz()
+  ipAddress     String?  @map("ip_address") @db.VarChar(45)
+  userAgent     String?  @map("user_agent")
+
+  certificate Certificate @relation(fields: [certificateId], references: [certificateId], onDelete: Restrict)
+
+  @@index([certificateId])
+  @@index([scannedAt])
+  @@map("certificate_verifications")
 }
 
 // =============================================================================

@@ -1,11 +1,15 @@
+import HeroSection from '@/components/landing/HeroSection'
+import ProblemSolution from '@/components/landing/ProblemSolution'
+import ReferralSection from '@/components/landing/ReferralSection'
 import { CourseCatalog } from '@/components/landing/CourseCatalog'
+import { Timeline } from '@/components/landing/Timeline'
 import { getBranches, getCourses } from '@/lib/api'
 import { validateRequest } from '@/lib/auth/session'
 import { prisma } from '@/lib/db'
 
 export const dynamic = 'force-dynamic'
 
-export default async function DashboardExplorePage() {
+export default async function DashboardHomePage() {
   const [coursesRes, branchesRes] = await Promise.all([
     getCourses({ page: 1, limit: 12 }),
     getBranches(),
@@ -25,40 +29,24 @@ export default async function DashboardExplorePage() {
       },
       select: {
         course: {
-          select: {
-            courseId: true,
-          },
+          select: { courseId: true },
         },
       },
     })
-
-    enrolledCourseIds = enrollments.map((enrollment) => enrollment.course.courseId).sort()
+    enrolledCourseIds = enrollments.map((enrollment) => enrollment.course.courseId)
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-linear-to-r from-purple-600 to-blue-600 px-6 py-16">
-        <div className="mx-auto max-w-7xl">
-          <h1
-            className="mb-4 text-4xl font-bold text-white"
-            style={{ fontFamily: 'var(--font-outfit)' }}
-          >
-            Explore Courses
-          </h1>
-          <p
-            className="max-w-2xl text-lg text-white/80"
-            style={{ fontFamily: 'var(--font-poppins)' }}
-          >
-            Browse every course available on Sprintern. Purchased courses stay visible here so you can jump back in anytime.
-          </p>
-        </div>
-      </div>
-
+    <main className="min-h-screen bg-white">
+      <HeroSection />
+      <ProblemSolution />
       <CourseCatalog
         initialCourses={initialCourses}
         initialBranches={initialBranches}
         enrolledCourseIds={enrolledCourseIds}
       />
-    </div>
+      <Timeline />
+      <ReferralSection />
+    </main>
   )
 }

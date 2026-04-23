@@ -23,34 +23,43 @@ export async function GET(
 
         const { page, limit } = parsed.data
         const skip = (page - 1) * limit
+        const where = { userId }
 
-        const where = { userId, certificateIssued: true }
-
-        const [enrollments, total] = await Promise.all([
-            prisma.enrollment.findMany({
+        const [certificates, total] = await Promise.all([
+            prisma.certificate.findMany({
                 where,
                 skip,
                 take: limit,
-                orderBy: { completedAt: 'desc' },
+                orderBy: { issuedAt: 'desc' },
                 select: {
                     id: true,
                     certificateId: true,
-                    courseId: true,
-                    course: { select: { courseName: true } },
-                    completedAt: true,
-                }
+                    courseName: true,
+                    issuedAt: true,
+                    isRevoked: true,
+                    revocationReason: true,
+                },
             }),
-            prisma.enrollment.count({ where }),
+            prisma.certificate.count({ where }),
         ])
 
-        const certificates = enrollments.map(e => ({
-            id: e.id,
-            certificateId: e.certificateId,
-            courseName: e.course.courseName,
-            issuedAt: e.completedAt,
+        const items = certificates.map((certificate: {
+            id: string
+            certificateId: string
+            courseName: string
+            issuedAt: Date
+            isRevoked: boolean
+            revocationReason: string | null
+        }) => ({
+            id: certificate.id,
+            certificateId: certificate.certificateId,
+            courseName: certificate.courseName,
+            issuedAt: certificate.issuedAt,
+            isRevoked: certificate.isRevoked,
+            revocationReason: certificate.revocationReason,
         }))
 
-        return createPaginatedResponse(certificates, { total, page, pageSize: limit })
+        return createPaginatedResponse(items, { total, page, pageSize: limit })
     } catch (error) {
         if (error instanceof AuthError) {
             return createSuccessResponse(null, HttpStatus.UNAUTHORIZED)

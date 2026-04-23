@@ -205,11 +205,10 @@ export function Navbar() {
         const data = await res.json().catch(() => ({}));
 
         if (res.ok) {
-          setSuccessMessage('Account created! Please log in.');
+          setSuccessMessage('Account created! Redirecting to your dashboard.');
           setTimeout(() => {
-            closeModal();
-            openModal('login');
-          }, 1500);
+            window.location.replace('/dashboard');
+          }, 1000);
         } else {
           const parsed = parseApiError(data, res.status);
           setError(parsed.message);
@@ -549,7 +548,7 @@ export function Navbar() {
                     <div className="relative">
                       <input
                         type="email"
-                        placeholder="e.g. rahul@ietlucknow.ac.in"
+                        placeholder="e.g. anujdubey19@gmail.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         disabled={isLoading}
@@ -833,7 +832,7 @@ export function Navbar() {
                     <div className="relative">
                       <input
                         type="email"
-                        placeholder="e.g. rahul@ietlucknow.ac.in"
+                        placeholder="e.g. anujdubey19@gmail.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && !isLoading && handleForgotPassword()}

@@ -36,11 +36,14 @@
     ".next-prod/types/**/*.ts",
     ".next-prod/dev/types/**/*.ts",
     ".next-runtime/types/**/*.ts",
-    ".next-runtime/dev/types/**/*.ts"
+    ".next-runtime/dev/types/**/*.ts",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",
     ".next",
-    ".next-runtime"
+    ".next-runtime",
+    "sprintern"
   ]
 }

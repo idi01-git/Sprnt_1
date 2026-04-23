@@ -8,7 +8,6 @@ import {
   BookOpen,
   Wallet,
   Users,
-  Bell,
   Award,
   ChevronDown,
   LogOut,
@@ -86,7 +85,7 @@ function parseApiError(data: any, httpStatus: number): { message: string; fields
 }
 
 function DashboardNavbar({ onShowAuth }: { onShowAuth: (view: View) => void }) {
-  const { user, status, unreadCount } = useSession();
+  const { user, status } = useSession();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
@@ -101,19 +100,17 @@ function DashboardNavbar({ onShowAuth }: { onShowAuth: (view: View) => void }) {
   }, []);
 
   const navItems = [
-    { href: '/dashboard', icon: BookOpen, label: 'My Courses' },
-    { href: '/dashboard/submit', icon: FileCheck, label: 'Submissions' },
-    // { href: '/dashboard/certificates', icon: Award, label: 'Certificates' },
+    { href: '/dashboard', icon: Sparkles, label: 'Explore' },
+    { href: '/dashboard/my-learning', icon: BookOpen, label: 'My Learning' },
     { href: '/dashboard/referrals', icon: Users, label: 'Refer & Earn' },
     { href: '/dashboard/wallet', icon: Wallet, label: 'Wallet' },
-    // { href: '/dashboard/profile', icon: User, label: 'Profile & Settings' },
   ];
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl shadow-lg shadow-purple-500/10">
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 transition-transform duration-200 hover:scale-105">
+          <Link href="/dashboard/home" className="flex items-center gap-2 transition-transform duration-200 hover:scale-105">
             <img src="/images/logo.png" alt="Logo" className="h-10 w-auto" />
           </Link>
 
@@ -132,15 +129,6 @@ function DashboardNavbar({ onShowAuth }: { onShowAuth: (view: View) => void }) {
           </div>
 
           <div className="flex items-center gap-3">
-            <Link href="/dashboard/notifications" className="relative p-2 rounded-xl hover:bg-purple-50 transition-colors">
-              <Bell className="w-5 h-5 text-gray-600" />
-              {unreadCount !== undefined && unreadCount > 0 && (
-                <span className="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                  {unreadCount > 9 ? '9+' : unreadCount}
-                </span>
-              )}
-            </Link>
-
             {user ? (
               <div className="relative" ref={userMenuRef}>
                 <button
@@ -225,7 +213,7 @@ function DashboardNavbar({ onShowAuth }: { onShowAuth: (view: View) => void }) {
                       onClick={async () => {
                         setUserMenuOpen(false);
                         await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }).catch(() => {});
-                        window.location.href = '/';
+                        window.location.href = '/login';
                       }}
                       className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
                     >
@@ -334,8 +322,8 @@ function AuthModal({ show, onClose, view, setView, onLogin }: { show: boolean; o
       const data = await res.json().catch(() => ({}));
 
       if (res.ok) {
-        setSuccessMessage('Account created! Please log in.');
-        setTimeout(() => { onClose(); setView('login'); }, 1500);
+        setSuccessMessage('Account created! Redirecting to your dashboard.');
+        setTimeout(() => { onLogin(); onClose(); }, 1000);
       } else {
         const parsed = parseApiError(data, res.status);
         setError(parsed.message);
@@ -779,7 +767,7 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
 
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }).catch(() => {});
-    window.location.href = '/';
+    window.location.href = '/login';
   };
 
   const handleLoginSuccess = () => {
@@ -821,7 +809,7 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
 
   // Unauthenticated — redirect to landing page
   if (status === 'unauthenticated') {
-    if (typeof window !== 'undefined') window.location.href = '/';
+    if (typeof window !== 'undefined') window.location.href = '/login';
     return null;
   }
 

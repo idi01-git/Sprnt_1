@@ -1,25 +1,45 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { use, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
-  ArrowLeft, User, Mail, Phone, Calendar, BookOpen, FileCheck, Award,
-  Gift, Wallet, Shield, ShieldOff, RefreshCw, LogOut, UserPlus,
-  CheckCircle2, XCircle, Clock, ChevronRight, AlertCircle, Loader2, Copy, Check,
+  AlertCircle, ArrowLeft, Award, BookOpen, Calendar, CheckCircle2, ChevronRight,
+  Clock, Copy, FileCheck, Gift, Loader2, LogOut, Mail, Phone, RefreshCw,
+  Shield, ShieldOff, User, UserPlus, Wallet,
 } from 'lucide-react';
 import {
-  getAdminUserDetail, suspendAdminUser, activateAdminUser,
-  getAdminUserEnrollments, getAdminUserSubmissions,
-  getAdminUserReferrals, getAdminUserTransactions,
-  adminResetUserPassword, adminRevokeUserSessions, adminManualEnroll,
-  getAdminCourses, AdminUserDetail,
+  AdminUserDetail,
+  adminManualEnroll,
+  adminResetUserPassword,
+  adminRevokeUserSessions,
+  getAdminCourses,
+  getAdminUserCertificates,
+  getAdminUserDetail,
+  getAdminUserEnrollments,
+  getAdminUserReferrals,
+  getAdminUserSubmissions,
+  getAdminUserTransactions,
+  updateAdminUser,
 } from '@/lib/api';
 
 const poppins: React.CSSProperties = { fontFamily: "'Poppins', sans-serif" };
 const outfit: React.CSSProperties = { fontFamily: "'Outfit', sans-serif" };
 
-const TABS = ['Overview', 'Enrollments', 'Submissions', 'Referrals', 'Transactions'] as const;
+const TABS = ['Overview', 'Enrollments', 'Submissions', 'Referrals', 'Transactions', 'Certificates', 'Sessions'] as const;
 type Tab = typeof TABS[number];
+
+type UserEditForm = {
+  name: string;
+  email: string;
+  phone: string;
+  dob: string;
+  studyLevel: string;
+  avatarUrl: string;
+  upiId: string;
+  referralCode: string;
+  emailVerified: boolean;
+  status: 'active' | 'suspended';
+};
 
 const statusBadge = (status: string) => {
   const map: Record<string, string> = {
@@ -30,7 +50,6 @@ const statusBadge = (status: string) => {
     rejected: 'bg-red-100 text-red-700',
     under_review: 'bg-blue-100 text-blue-700',
     resubmitted: 'bg-purple-100 text-purple-700',
-    valid: 'bg-green-100 text-green-700',
     revoked: 'bg-red-100 text-red-700',
     completed: 'bg-green-100 text-green-700',
     in_progress: 'bg-blue-100 text-blue-700',
@@ -38,23 +57,38 @@ const statusBadge = (status: string) => {
   return map[status] || 'bg-gray-100 text-gray-700';
 };
 
-const fmt = (d?: string | null) => d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
-const fmtAmount = (n?: number) => n != null ? `₹${n.toFixed(2)}` : '—';
+const fmt = (value?: string | null) => value ? new Date(value).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '-';
+const fmtAmount = (value?: number) => value != null ? `Rs ${value.toFixed(2)}` : '-';
+
+function buildFormState(user: AdminUserDetail): UserEditForm {
+  return {
+    name: user.name,
+    email: user.email,
+    phone: user.phone || '',
+    dob: user.dob ? user.dob.slice(0, 10) : '',
+    studyLevel: user.studyLevel || '',
+    avatarUrl: user.avatarUrl || '',
+    upiId: user.upiId || '',
+    referralCode: user.referralCode || '',
+    emailVerified: user.emailVerified,
+    status: user.status,
+  };
+}
 
 export default function AdminUserDetailPage({ params }: { params: Promise<{ userId: string }> }) {
   const { userId } = use(params);
   const [user, setUser] = useState<AdminUserDetail | null>(null);
+  const [form, setForm] = useState<UserEditForm | null>(null);
   const [tab, setTab] = useState<Tab>('Overview');
   const [loading, setLoading] = useState(true);
-  const [tabData, setTabData] = useState<any[]>([]);
   const [tabLoading, setTabLoading] = useState(false);
-
-  // Action states
+  const [tabData, setTabData] = useState<any[]>([]);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
   const [showEnrollModal, setShowEnrollModal] = useState(false);
   const [courses, setCourses] = useState<{ id: string; courseName: string }[]>([]);
   const [selectedCourse, setSelectedCourse] = useState('');
+  const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null);
   const [copiedPw, setCopiedPw] = useState<string | null>(null);
 
   const showToast = (msg: string, ok = true) => {
@@ -62,92 +96,173 @@ export default function AdminUserDetailPage({ params }: { params: Promise<{ user
     setTimeout(() => setToast(null), 3500);
   };
 
-  useEffect(() => { fetchUser(); }, []);
-  useEffect(() => { fetchTabData(tab); }, [tab, userId]);
+  useEffect(() => {
+    void fetchUser();
+  }, [userId]);
+
+  useEffect(() => {
+    void fetchTabData(tab);
+  }, [tab, userId, user]);
 
   async function fetchUser() {
     setLoading(true);
-    const res = await getAdminUserDetail(userId);
-    if (res.success && res.data) setUser(res.data.user);
+    const response = await getAdminUserDetail(userId);
+    if (response.success && response.data) {
+      setUser(response.data.user);
+      setForm(buildFormState(response.data.user));
+      setIsEditing(false);
+    }
     setLoading(false);
   }
 
-  async function fetchTabData(t: Tab) {
-    if (t === 'Overview') return;
-    setTabLoading(true);
-    let res;
-    if (t === 'Enrollments') res = await getAdminUserEnrollments(userId);
-    else if (t === 'Submissions') res = await getAdminUserSubmissions(userId);
-    else if (t === 'Referrals') res = await getAdminUserReferrals(userId);
-    else if (t === 'Transactions') res = await getAdminUserTransactions(userId);
-
-    if (res?.success && res.data) {
-      const key = t.toLowerCase();
-      setTabData((res.data as any)[key] || []);
-    } else {
-      setTabData([]);
+  async function fetchTabData(nextTab: Tab) {
+    if (nextTab === 'Overview') return;
+    if (nextTab === 'Sessions') {
+      setTabData(Array.isArray(user?.sessions) ? user.sessions : []);
+      return;
     }
-    setTabLoading(false);
+
+    setTabLoading(true);
+    try {
+      if (nextTab === 'Enrollments') {
+        const response = await getAdminUserEnrollments(userId);
+        setTabData(response.success && response.data ? (response.data.enrollments || []) : []);
+      } else if (nextTab === 'Submissions') {
+        const response = await getAdminUserSubmissions(userId);
+        setTabData(response.success && response.data ? (response.data.submissions || []) : []);
+      } else if (nextTab === 'Referrals') {
+        const response = await getAdminUserReferrals(userId);
+        setTabData(response.success && response.data ? (response.data.referrals || []) : []);
+      } else if (nextTab === 'Transactions') {
+        const response = await getAdminUserTransactions(userId);
+        setTabData(response.success && response.data ? (response.data.transactions || []) : []);
+      } else if (nextTab === 'Certificates') {
+        const response = await getAdminUserCertificates(userId);
+        const data = response.success ? response.data : null;
+        setTabData(Array.isArray(data) ? data : Array.isArray(data?.certificates) ? data.certificates : []);
+      }
+    } finally {
+      setTabLoading(false);
+    }
   }
 
-  async function handleToggleStatus() {
-    if (!user) return;
-    setActionLoading('status');
-    const fn = user.status === 'active' ? suspendAdminUser : activateAdminUser;
-    const res = await fn(userId);
-    if (res.success) { showToast(`User ${user.status === 'active' ? 'suspended' : 'activated'}`); fetchUser(); }
-    else showToast('Action failed', false);
+  async function handleSave() {
+    if (!form) return;
+    setActionLoading('save');
+    const response = await updateAdminUser(userId, {
+      name: form.name,
+      email: form.email,
+      phone: form.phone || null,
+      dob: form.dob || null,
+      studyLevel: form.studyLevel || null,
+      avatarUrl: form.avatarUrl || null,
+      upiId: form.upiId || null,
+      referralCode: form.referralCode || null,
+      emailVerified: form.emailVerified,
+      status: form.status,
+    });
+
+    if (response.success) {
+      showToast('User details updated');
+      setIsEditing(false);
+      await fetchUser();
+    } else {
+      showToast(response.error?.message || 'Failed to update user', false);
+    }
     setActionLoading(null);
+  }
+
+  function handleStartEditing() {
+    if (!user) return;
+    setForm(buildFormState(user));
+    setIsEditing(true);
+  }
+
+  function handleCancelEditing() {
+    if (!user) return;
+    setForm(buildFormState(user));
+    setIsEditing(false);
   }
 
   async function handleResetPassword() {
     setActionLoading('pw');
-    const res = await adminResetUserPassword(userId);
-    if (res.success) {
-      const pw = res.data?.temporaryPassword;
-      if (pw) {
-        setCopiedPw(pw);
-        navigator.clipboard.writeText(pw).catch(() => {});
+    const response = await adminResetUserPassword(userId);
+    if (response.success) {
+      const password = response.data?.temporaryPassword;
+      if (password) {
+        setCopiedPw(password);
+        navigator.clipboard.writeText(password).catch(() => {});
       }
-      showToast('Password reset — temporary password copied!');
-    } else showToast('Reset failed', false);
+      showToast('Temporary password copied');
+    } else {
+      showToast('Reset failed', false);
+    }
     setActionLoading(null);
   }
 
   async function handleRevokeSessions() {
     setActionLoading('sessions');
-    const res = await adminRevokeUserSessions(userId);
-    if (res.success) showToast('All sessions revoked');
-    else showToast('Revoke failed', false);
+    const response = await adminRevokeUserSessions(userId);
+    if (response.success) {
+      showToast('All sessions revoked');
+      await fetchUser();
+      if (tab === 'Sessions') {
+        setTabData([]);
+      }
+    } else {
+      showToast('Failed to revoke sessions', false);
+    }
     setActionLoading(null);
   }
 
   async function handleManualEnroll() {
     if (!selectedCourse) return;
     setActionLoading('enroll');
-    const res = await adminManualEnroll(userId, selectedCourse);
-    if (res.success) { showToast('Enrolled successfully'); setShowEnrollModal(false); fetchTabData('Enrollments'); }
-    else showToast('Enrollment failed', false);
+    const response = await adminManualEnroll(userId, selectedCourse);
+    if (response.success) {
+      showToast('User enrolled successfully');
+      setSelectedCourse('');
+      setShowEnrollModal(false);
+      if (tab === 'Enrollments') {
+        await fetchTabData('Enrollments');
+      }
+    } else {
+      showToast('Enrollment failed', false);
+    }
     setActionLoading(null);
   }
 
   async function openEnrollModal() {
     setShowEnrollModal(true);
-    const res = await getAdminCourses({ status: 'active', limit: 50 });
-    if (res.success && res.data) setCourses(res.data.courses.map(c => ({ id: c.id, courseName: c.courseName })));
+    const response = await getAdminCourses({ status: 'active', limit: 50 });
+    if (response.success && response.data) {
+      setCourses(response.data.courses.map((course) => ({ id: course.id, courseName: course.courseName })));
+    }
   }
+
+  const statsCards = useMemo(() => {
+    if (!user) return [];
+    return [
+      { label: 'Wallet Balance', value: fmtAmount(user.walletBalance) },
+      { label: 'Enrollments', value: String(user.counts.enrollments) },
+      { label: 'Submissions', value: String(user.counts.submissions) },
+      { label: 'Certificates', value: String(user.counts.certificates) },
+      { label: 'Referral Earnings', value: fmtAmount(user.referralStats.totalEarned) },
+      { label: 'Active Sessions', value: String(user.counts.sessions) },
+    ];
+  }, [user]);
 
   if (loading) {
     return (
       <div className="animate-pulse">
-        <div className="h-5 w-32 bg-gray-200 rounded mb-8" />
-        <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm mb-6">
+        <div className="mb-8 h-5 w-32 rounded bg-gray-200" />
+        <div className="mb-6 rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
           <div className="flex items-center gap-6">
-            <div className="w-20 h-20 rounded-full bg-gray-200 shrink-0" />
+            <div className="h-20 w-20 rounded-full bg-gray-200" />
             <div className="space-y-2">
-              <div className="h-6 w-48 bg-gray-200 rounded" />
-              <div className="h-4 w-64 bg-gray-100 rounded" />
-              <div className="h-4 w-32 bg-gray-100 rounded" />
+              <div className="h-6 w-48 rounded bg-gray-200" />
+              <div className="h-4 w-64 rounded bg-gray-100" />
+              <div className="h-4 w-32 rounded bg-gray-100" />
             </div>
           </div>
         </div>
@@ -155,49 +270,47 @@ export default function AdminUserDetailPage({ params }: { params: Promise<{ user
     );
   }
 
-  if (!user) {
+  if (!user || !form) {
     return (
-      <div className="flex flex-col items-center justify-center h-64 gap-4">
-        <AlertCircle className="w-12 h-12 text-red-400" />
+      <div className="flex h-64 flex-col items-center justify-center gap-4">
+        <AlertCircle className="h-12 w-12 text-red-400" />
         <p className="text-gray-500" style={poppins}>User not found</p>
-        <Link href="/admin/users" className="text-purple-600 hover:underline text-sm" style={poppins}>Back to Users</Link>
+        <Link href="/admin/users" className="text-sm text-purple-600 hover:underline" style={poppins}>Back to Users</Link>
       </div>
     );
   }
 
   return (
     <div>
-      {/* Toast */}
       {toast && (
-        <div className={`fixed top-4 right-4 z-50 px-5 py-3 rounded-xl shadow-lg text-white text-sm flex items-center gap-2 ${toast.ok ? 'bg-green-600' : 'bg-red-600'}`} style={poppins}>
-          {toast.ok ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+        <div className={`fixed right-4 top-4 z-50 flex items-center gap-2 rounded-xl px-5 py-3 text-sm text-white shadow-lg ${toast.ok ? 'bg-green-600' : 'bg-red-600'}`} style={poppins}>
+          {toast.ok ? <CheckCircle2 className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
           {toast.msg}
         </div>
       )}
 
-      {/* Manual Enroll Modal */}
       {showEnrollModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4" style={{ ...outfit, fontWeight: 800 }}>Manual Enrollment</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+            <h2 className="mb-4 text-lg font-bold text-gray-900" style={{ ...outfit, fontWeight: 800 }}>Manual Enrollment</h2>
             <select
               value={selectedCourse}
-              onChange={e => setSelectedCourse(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-purple-500 outline-none mb-4 text-sm"
+              onChange={(event) => setSelectedCourse(event.target.value)}
+              className="mb-4 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-purple-500"
               style={poppins}
             >
               <option value="">Select a course…</option>
-              {courses.map(c => <option key={c.id} value={c.id}>{c.courseName}</option>)}
+              {courses.map((course) => <option key={course.id} value={course.id}>{course.courseName}</option>)}
             </select>
             <div className="flex gap-3">
-              <button onClick={() => setShowEnrollModal(false)} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 text-sm hover:bg-gray-50" style={poppins}>Cancel</button>
+              <button onClick={() => setShowEnrollModal(false)} className="flex-1 rounded-xl border border-gray-200 py-2.5 text-sm text-gray-600 hover:bg-gray-50" style={poppins}>Cancel</button>
               <button
                 onClick={handleManualEnroll}
                 disabled={!selectedCourse || actionLoading === 'enroll'}
-                className="flex-1 py-2.5 rounded-xl bg-linear-to-r from-purple-600 to-blue-600 text-white text-sm disabled:opacity-60 flex items-center justify-center gap-2"
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-linear-to-r from-purple-600 to-blue-600 py-2.5 text-sm text-white disabled:opacity-60"
                 style={{ ...poppins, fontWeight: 600 }}
               >
-                {actionLoading === 'enroll' ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                {actionLoading === 'enroll' ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                 Enroll
               </button>
             </div>
@@ -205,176 +318,224 @@ export default function AdminUserDetailPage({ params }: { params: Promise<{ user
         </div>
       )}
 
-      {/* Back */}
-      <Link href="/admin/users" className="inline-flex items-center gap-2 text-gray-500 hover:text-purple-600 text-sm mb-6 transition-colors" style={poppins}>
-        <ArrowLeft className="w-4 h-4" /> Back to Users
+      <Link href="/admin/users" className="mb-6 inline-flex items-center gap-2 text-sm text-gray-500 transition-colors hover:text-purple-600" style={poppins}>
+        <ArrowLeft className="h-4 w-4" /> Back to Users
       </Link>
 
-      {/* Profile Card */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-8 mb-6">
-        <div className="flex flex-col sm:flex-row items-start gap-6">
-          {/* Avatar */}
-          <div className="w-20 h-20 rounded-2xl bg-linear-to-br from-purple-600 to-blue-600 flex items-center justify-center text-white text-3xl font-bold shrink-0" style={{ ...outfit, fontWeight: 800 }}>
+      <div className="mb-6 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm md:p-8">
+        <div className="flex flex-col gap-6 lg:flex-row">
+          <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-linear-to-br from-purple-600 to-blue-600 text-3xl font-bold text-white" style={{ ...outfit, fontWeight: 800 }}>
             {user.name.charAt(0).toUpperCase()}
           </div>
 
-          <div className="flex-1 min-w-0">
-            <div className="flex flex-wrap items-center gap-3 mb-1">
+          <div className="flex-1">
+            <div className="mb-4 flex flex-wrap items-center gap-3">
               <h1 className="text-2xl font-bold text-gray-900" style={{ ...outfit, fontWeight: 800 }}>{user.name}</h1>
-              <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${statusBadge(user.status)}`} style={poppins}>{user.status}</span>
+              <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${statusBadge(user.status)}`} style={poppins}>{user.status}</span>
               {user.emailVerified ? (
-                <span className="flex items-center gap-1 text-green-600 text-xs" style={poppins}><Shield className="w-3.5 h-3.5" /> Verified</span>
+                <span className="flex items-center gap-1 text-xs text-green-600" style={poppins}><Shield className="h-3.5 w-3.5" /> Verified</span>
               ) : (
-                <span className="flex items-center gap-1 text-gray-400 text-xs" style={poppins}><ShieldOff className="w-3.5 h-3.5" /> Unverified</span>
+                <span className="flex items-center gap-1 text-xs text-gray-400" style={poppins}><ShieldOff className="h-3.5 w-3.5" /> Unverified</span>
               )}
             </div>
-            <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-gray-500 mb-4" style={poppins}>
-              <span className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" />{user.email}</span>
-              {user.phone && <span className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" />{user.phone}</span>}
-              {user.dob && <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" />{fmt(user.dob)}</span>}
-              <span className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" />{user.studyLevel?.replace(/_/g, ' ') || 'No study level'}</span>
-              <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" />Joined {fmt(user.createdAt)}</span>
+
+            <div className="mb-5 flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-500" style={poppins}>
+              <span className="flex items-center gap-1.5"><Mail className="h-3.5 w-3.5" />{user.email}</span>
+              {user.phone && <span className="flex items-center gap-1.5"><Phone className="h-3.5 w-3.5" />{user.phone}</span>}
+              {user.dob && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" />{fmt(user.dob)}</span>}
+              <span className="flex items-center gap-1.5"><User className="h-3.5 w-3.5" />{user.studyLevel?.replace(/_/g, ' ') || 'No study level'}</span>
+              <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" />Joined {fmt(user.createdAt)}</span>
             </div>
 
-            {/* Temp password display */}
             {copiedPw && (
-              <div className="mb-4 flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+              <div className="mb-4 flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
                 <p className="text-sm text-amber-800" style={poppins}>Temp password: <strong className="font-mono">{copiedPw}</strong></p>
-                <button onClick={() => { navigator.clipboard.writeText(copiedPw); }} className="p-1 hover:bg-amber-200 rounded">
-                  <Copy className="w-3.5 h-3.5 text-amber-700" />
+                <button onClick={() => { navigator.clipboard.writeText(copiedPw); }} className="rounded p-1 hover:bg-amber-200">
+                  <Copy className="h-3.5 w-3.5 text-amber-700" />
                 </button>
-                <button onClick={() => setCopiedPw(null)} className="ml-auto text-amber-600 hover:text-amber-800 text-xs" style={poppins}>Dismiss</button>
+                <button onClick={() => setCopiedPw(null)} className="ml-auto text-xs text-amber-600 hover:text-amber-800" style={poppins}>Dismiss</button>
               </div>
             )}
 
-            {/* Action Buttons */}
             <div className="flex flex-wrap gap-2">
               <button
-                onClick={handleToggleStatus}
-                disabled={actionLoading === 'status'}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm transition-all disabled:opacity-60 ${user.status === 'active' ? 'bg-red-100 text-red-700 hover:bg-red-200' : 'bg-green-100 text-green-700 hover:bg-green-200'}`}
+                onClick={isEditing ? handleSave : handleStartEditing}
+                disabled={actionLoading === 'save'}
+                className="rounded-xl bg-linear-to-r from-purple-600 to-blue-600 px-4 py-2 text-sm text-white transition-all hover:shadow-md disabled:opacity-60"
                 style={{ ...poppins, fontWeight: 600 }}
               >
-                {actionLoading === 'status' ? <Loader2 className="w-4 h-4 animate-spin" /> : user.status === 'active' ? <ShieldOff className="w-4 h-4" /> : <Shield className="w-4 h-4" />}
-                {user.status === 'active' ? 'Suspend' : 'Activate'}
+                {actionLoading === 'save' ? 'Saving…' : isEditing ? 'Save Changes' : 'Edit User'}
               </button>
+              {isEditing && (
+                <button
+                  onClick={handleCancelEditing}
+                  className="rounded-xl bg-white px-4 py-2 text-sm text-gray-700 ring-1 ring-gray-200 transition-all hover:bg-gray-50"
+                  style={{ ...poppins, fontWeight: 600 }}
+                >
+                  Cancel
+                </button>
+              )}
               <button
                 onClick={handleResetPassword}
                 disabled={actionLoading === 'pw'}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-100 text-amber-700 hover:bg-amber-200 text-sm disabled:opacity-60 transition-all"
+                className="flex items-center gap-1.5 rounded-xl bg-amber-100 px-4 py-2 text-sm text-amber-700 transition-all hover:bg-amber-200 disabled:opacity-60"
                 style={{ ...poppins, fontWeight: 600 }}
               >
-                {actionLoading === 'pw' ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+                {actionLoading === 'pw' ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
                 Reset Password
               </button>
               <button
                 onClick={handleRevokeSessions}
                 disabled={actionLoading === 'sessions'}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm disabled:opacity-60 transition-all"
+                className="flex items-center gap-1.5 rounded-xl bg-gray-100 px-4 py-2 text-sm text-gray-700 transition-all hover:bg-gray-200 disabled:opacity-60"
                 style={{ ...poppins, fontWeight: 600 }}
               >
-                {actionLoading === 'sessions' ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogOut className="w-4 h-4" />}
+                {actionLoading === 'sessions' ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogOut className="h-4 w-4" />}
                 Revoke Sessions
               </button>
               <button
                 onClick={openEnrollModal}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-linear-to-r from-purple-600 to-blue-600 text-white hover:shadow-md text-sm transition-all"
+                className="flex items-center gap-1.5 rounded-xl bg-white px-4 py-2 text-sm text-purple-700 ring-1 ring-purple-200 transition-all hover:bg-purple-50"
                 style={{ ...poppins, fontWeight: 600 }}
               >
-                <UserPlus className="w-4 h-4" /> Manual Enroll
+                <UserPlus className="h-4 w-4" /> Manual Enroll
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="mb-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        {statsCards.map((card) => (
+          <div key={card.label} className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+            <p className="text-xs uppercase tracking-[0.2em] text-gray-400" style={poppins}>{card.label}</p>
+            <p className="mt-2 text-2xl font-bold text-gray-900" style={{ ...outfit, fontWeight: 800 }}>{card.value}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="rounded-2xl border border-gray-100 bg-white shadow-sm">
         <div className="flex overflow-x-auto border-b border-gray-100">
-          {TABS.map(t => {
-            const icons: Record<Tab, React.ElementType> = { Overview: User, Enrollments: BookOpen, Submissions: FileCheck, Referrals: Gift, Transactions: Wallet };
-            const Icon = icons[t];
+          {TABS.map((nextTab) => {
+            const icons: Record<Tab, React.ElementType> = {
+              Overview: User,
+              Enrollments: BookOpen,
+              Submissions: FileCheck,
+              Referrals: Gift,
+              Transactions: Wallet,
+              Certificates: Award,
+              Sessions: LogOut,
+            };
+            const Icon = icons[nextTab];
             return (
               <button
-                key={t}
-                onClick={() => setTab(t)}
-                className={`flex items-center gap-2 px-5 py-4 text-sm whitespace-nowrap border-b-2 transition-all ${tab === t ? 'border-purple-600 text-purple-700 bg-purple-50/50' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
-                style={{ ...poppins, fontWeight: tab === t ? 600 : 400 }}
+                key={nextTab}
+                onClick={() => setTab(nextTab)}
+                className={`flex items-center gap-2 whitespace-nowrap border-b-2 px-5 py-4 text-sm transition-all ${tab === nextTab ? 'border-purple-600 bg-purple-50/50 text-purple-700' : 'border-transparent text-gray-500 hover:bg-gray-50 hover:text-gray-700'}`}
+                style={{ ...poppins, fontWeight: tab === nextTab ? 600 : 400 }}
               >
-                <Icon className="w-4 h-4" />{t}
+                <Icon className="h-4 w-4" />
+                {nextTab}
               </button>
             );
           })}
         </div>
 
         <div className="p-6">
-          {/* Overview Tab */}
           {tab === 'Overview' && (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {[
-                { icon: Mail, label: 'Email', value: user.email },
-                { icon: Phone, label: 'Phone', value: user.phone || '—' },
-                { icon: Calendar, label: 'Date of Birth', value: fmt(user.dob) },
-                { icon: User, label: 'Study Level', value: user.studyLevel?.replace(/_/g, ' ') || '—' },
-                { icon: Clock, label: 'Joined', value: fmt(user.createdAt) },
-                { icon: Shield, label: 'Email Verified', value: user.emailVerified ? 'Yes' : 'No' },
-              ].map((f, i) => {
-                const Icon = f.icon;
-                return (
-                  <div key={i} className="bg-gray-50 rounded-xl p-4">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Icon className="w-4 h-4 text-purple-500" />
-                      <p className="text-xs text-gray-500" style={poppins}>{f.label}</p>
-                    </div>
-                    <p className="font-semibold text-gray-900 text-sm" style={poppins}>{f.value}</p>
+            <div className="grid gap-5 lg:grid-cols-2">
+              <div className="space-y-4 rounded-2xl bg-gray-50 p-5">
+                <h2 className="text-lg font-bold text-gray-900" style={{ ...outfit, fontWeight: 700 }}>Profile Details</h2>
+                <FormField label="Full Name">
+                  <input disabled={!isEditing} value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100 disabled:text-gray-500" style={poppins} />
+                </FormField>
+                <FormField label="Email">
+                  <input disabled={!isEditing} value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100 disabled:text-gray-500" style={poppins} />
+                </FormField>
+                <FormField label="Phone">
+                  <input disabled={!isEditing} value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100 disabled:text-gray-500" style={poppins} />
+                </FormField>
+                <FormField label="Date of Birth">
+                  <input disabled={!isEditing} type="date" value={form.dob} onChange={(event) => setForm({ ...form, dob: event.target.value })} className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100 disabled:text-gray-500" style={poppins} />
+                </FormField>
+                <FormField label="Study Level">
+                  <input disabled={!isEditing} value={form.studyLevel} onChange={(event) => setForm({ ...form, studyLevel: event.target.value })} className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100 disabled:text-gray-500" style={poppins} />
+                </FormField>
+              </div>
+
+              <div className="space-y-4 rounded-2xl bg-gray-50 p-5">
+                <h2 className="text-lg font-bold text-gray-900" style={{ ...outfit, fontWeight: 700 }}>Account Controls</h2>
+                <FormField label="Avatar URL">
+                  <input disabled={!isEditing} value={form.avatarUrl} onChange={(event) => setForm({ ...form, avatarUrl: event.target.value })} className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100 disabled:text-gray-500" style={poppins} />
+                </FormField>
+                <FormField label="UPI ID">
+                  <input disabled={!isEditing} value={form.upiId} onChange={(event) => setForm({ ...form, upiId: event.target.value })} className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100 disabled:text-gray-500" style={poppins} />
+                </FormField>
+                <FormField label="Referral Code">
+                  <input disabled={!isEditing} value={form.referralCode} onChange={(event) => setForm({ ...form, referralCode: event.target.value.toUpperCase() })} className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm uppercase text-gray-900 outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100 disabled:text-gray-500" style={poppins} />
+                </FormField>
+                <FormField label="Status">
+                  <select disabled={!isEditing} value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value as 'active' | 'suspended' })} className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100 disabled:text-gray-500" style={poppins}>
+                    <option value="active">Active</option>
+                    <option value="suspended">Suspended</option>
+                  </select>
+                </FormField>
+                <label className={`flex items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 text-sm ${isEditing ? 'bg-white text-gray-700' : 'bg-gray-100 text-gray-500'}`} style={poppins}>
+                  <input disabled={!isEditing} type="checkbox" checked={form.emailVerified} onChange={(event) => setForm({ ...form, emailVerified: event.target.checked })} />
+                  Email Verified
+                </label>
+                <div className="rounded-xl border border-gray-200 bg-white p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-gray-400" style={poppins}>Read Only</p>
+                  <div className="mt-3 space-y-2 text-sm text-gray-600" style={poppins}>
+                    <p>User ID: <span className="font-mono text-gray-800">{user.id}</span></p>
+                    <p>Referred By: {user.referredBy || 'Not available'}</p>
+                    <p>Created: {fmt(user.createdAt)}</p>
+                    <p>Updated: {fmt(user.updatedAt)}</p>
                   </div>
-                );
-              })}
+                </div>
+              </div>
             </div>
           )}
 
-          {/* Generic tab content with loading */}
           {tab !== 'Overview' && (
             tabLoading ? (
-              <div className="animate-pulse space-y-3">
-                {[...Array(4)].map((_, i) => <div key={i} className="h-14 bg-gray-100 rounded-xl" />)}
+              <div className="space-y-3 animate-pulse">
+                {[...Array(4)].map((_, index) => <div key={index} className="h-14 rounded-xl bg-gray-100" />)}
               </div>
             ) : tabData.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-gray-400" style={poppins}>No {tab.toLowerCase()} found for this user</p>
+              <div className="py-12 text-center">
+                <p className="text-gray-400" style={poppins}>No {tab.toLowerCase()} found for this user.</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
-                {/* Enrollments */}
                 {tab === 'Enrollments' && (
                   <table className="w-full text-sm">
-                    <thead><tr className="border-b border-gray-100">{['Course', 'Progress', 'Status', 'Enrolled'].map(h => <th key={h} className="text-left py-3 px-4 text-gray-500 font-semibold" style={poppins}>{h}</th>)}</tr></thead>
+                    <thead><tr className="border-b border-gray-100">{['Course', 'Progress', 'Status', 'Enrolled'].map((heading) => <th key={heading} className="px-4 py-3 text-left font-semibold text-gray-500" style={poppins}>{heading}</th>)}</tr></thead>
                     <tbody>
-                      {tabData.map((e: any, i) => (
-                        <tr key={i} className="border-b border-gray-50 hover:bg-gray-50">
-                          <td className="py-3 px-4 font-semibold text-gray-900" style={poppins}>{e.courseName}</td>
-                          <td className="py-3 px-4 text-gray-600" style={poppins}>Day {e.currentDay} / {e.totalDays || 7}</td>
-                          <td className="py-3 px-4"><span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${statusBadge(e.status)}`} style={poppins}>{e.status?.replace(/_/g, ' ')}</span></td>
-                          <td className="py-3 px-4 text-gray-500" style={poppins}>{fmt(e.enrolledAt)}</td>
+                      {tabData.map((enrollment: any, index) => (
+                        <tr key={index} className="border-b border-gray-50 hover:bg-gray-50">
+                          <td className="px-4 py-3 font-semibold text-gray-900" style={poppins}>{enrollment.courseName}</td>
+                          <td className="px-4 py-3 text-gray-600" style={poppins}>Day {enrollment.currentDay} / {enrollment.totalDays || 7}</td>
+                          <td className="px-4 py-3"><span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${statusBadge(enrollment.status)}`} style={poppins}>{enrollment.status?.replace(/_/g, ' ')}</span></td>
+                          <td className="px-4 py-3 text-gray-500" style={poppins}>{fmt(enrollment.enrolledAt)}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 )}
 
-                {/* Submissions */}
                 {tab === 'Submissions' && (
                   <table className="w-full text-sm">
-                    <thead><tr className="border-b border-gray-100">{['Course', 'Status', 'Grade', 'Submitted', 'Action'].map(h => <th key={h} className="text-left py-3 px-4 text-gray-500 font-semibold" style={poppins}>{h}</th>)}</tr></thead>
+                    <thead><tr className="border-b border-gray-100">{['Course', 'Status', 'Grade', 'Submitted', 'Action'].map((heading) => <th key={heading} className="px-4 py-3 text-left font-semibold text-gray-500" style={poppins}>{heading}</th>)}</tr></thead>
                     <tbody>
-                      {tabData.map((s: any, i) => (
-                        <tr key={i} className="border-b border-gray-50 hover:bg-gray-50">
-                          <td className="py-3 px-4 font-semibold text-gray-900" style={poppins}>{s.courseName}</td>
-                          <td className="py-3 px-4"><span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${statusBadge(s.status)}`} style={poppins}>{s.status?.replace(/_/g, ' ')}</span></td>
-                          <td className="py-3 px-4 text-gray-600" style={poppins}>{s.grade || '—'}</td>
-                          <td className="py-3 px-4 text-gray-500" style={poppins}>{fmt(s.submittedAt)}</td>
-                          <td className="py-3 px-4">
-                            <Link href={`/admin/submissions/${s.id}`} className="flex items-center gap-1 text-purple-600 hover:underline text-xs" style={poppins}>View <ChevronRight className="w-3 h-3" /></Link>
+                      {tabData.map((submission: any, index) => (
+                        <tr key={index} className="border-b border-gray-50 hover:bg-gray-50">
+                          <td className="px-4 py-3 font-semibold text-gray-900" style={poppins}>{submission.enrollment?.course?.courseName || submission.courseName}</td>
+                          <td className="px-4 py-3"><span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${statusBadge(submission.reviewStatus || submission.status)}`} style={poppins}>{(submission.reviewStatus || submission.status || '').replace(/_/g, ' ')}</span></td>
+                          <td className="px-4 py-3 text-gray-600" style={poppins}>{submission.gradeCategory || '-'}</td>
+                          <td className="px-4 py-3 text-gray-500" style={poppins}>{fmt(submission.submittedAt)}</td>
+                          <td className="px-4 py-3">
+                            <Link href={`/admin/submissions/${submission.id}`} className="flex items-center gap-1 text-xs text-purple-600 hover:underline" style={poppins}>View <ChevronRight className="h-3 w-3" /></Link>
                           </td>
                         </tr>
                       ))}
@@ -382,36 +543,68 @@ export default function AdminUserDetailPage({ params }: { params: Promise<{ user
                   </table>
                 )}
 
-                {/* Referrals */}
                 {tab === 'Referrals' && (
                   <table className="w-full text-sm">
-                    <thead><tr className="border-b border-gray-100">{['Referred User', 'Email', 'Bonus', 'Status', 'Date'].map(h => <th key={h} className="text-left py-3 px-4 text-gray-500 font-semibold" style={poppins}>{h}</th>)}</tr></thead>
+                    <thead><tr className="border-b border-gray-100">{['Referred User', 'Email', 'Bonus', 'Status', 'Date'].map((heading) => <th key={heading} className="px-4 py-3 text-left font-semibold text-gray-500" style={poppins}>{heading}</th>)}</tr></thead>
                     <tbody>
-                      {tabData.map((r: any, i) => (
-                        <tr key={i} className="border-b border-gray-50 hover:bg-gray-50">
-                          <td className="py-3 px-4 font-semibold text-gray-900" style={poppins}>{r.refereeName || r.name || '—'}</td>
-                          <td className="py-3 px-4 text-gray-500" style={poppins}>{r.refereeEmail || r.email || '—'}</td>
-                          <td className="py-3 px-4 font-bold text-green-600" style={poppins}>{fmtAmount(r.bonusAmount)}</td>
-                          <td className="py-3 px-4"><span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${statusBadge(r.status)}`} style={poppins}>{r.status}</span></td>
-                          <td className="py-3 px-4 text-gray-500" style={poppins}>{fmt(r.createdAt)}</td>
+                      {tabData.map((referral: any, index) => (
+                        <tr key={index} className="border-b border-gray-50 hover:bg-gray-50">
+                          <td className="px-4 py-3 font-semibold text-gray-900" style={poppins}>{referral.referee?.name || '-'}</td>
+                          <td className="px-4 py-3 text-gray-500" style={poppins}>{referral.referee?.email || '-'}</td>
+                          <td className="px-4 py-3 font-bold text-green-600" style={poppins}>{fmtAmount(Number(referral.amount || 0))}</td>
+                          <td className="px-4 py-3"><span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${statusBadge(referral.status)}`} style={poppins}>{referral.status}</span></td>
+                          <td className="px-4 py-3 text-gray-500" style={poppins}>{fmt(referral.registeredAt || referral.createdAt)}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 )}
 
-                {/* Transactions */}
                 {tab === 'Transactions' && (
                   <table className="w-full text-sm">
-                    <thead><tr className="border-b border-gray-100">{['Type', 'Description', 'Amount', 'Status', 'Date'].map(h => <th key={h} className="text-left py-3 px-4 text-gray-500 font-semibold" style={poppins}>{h}</th>)}</tr></thead>
+                    <thead><tr className="border-b border-gray-100">{['Type', 'Description', 'Amount', 'Status', 'Date'].map((heading) => <th key={heading} className="px-4 py-3 text-left font-semibold text-gray-500" style={poppins}>{heading}</th>)}</tr></thead>
                     <tbody>
-                      {tabData.map((t: any, i) => (
-                        <tr key={i} className="border-b border-gray-50 hover:bg-gray-50">
-                          <td className="py-3 px-4"><span className="capitalize text-gray-600 font-semibold" style={poppins}>{t.type?.replace(/_/g, ' ')}</span></td>
-                          <td className="py-3 px-4 text-gray-600 max-w-xs truncate" style={poppins}>{t.description}</td>
-                          <td className={`py-3 px-4 font-bold ${t.amount >= 0 ? 'text-green-600' : 'text-red-600'}`} style={poppins}>{fmtAmount(t.amount)}</td>
-                          <td className="py-3 px-4"><span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${statusBadge(t.status)}`} style={poppins}>{t.status}</span></td>
-                          <td className="py-3 px-4 text-gray-500" style={poppins}>{fmt(t.createdAt)}</td>
+                      {tabData.map((transaction: any, index) => (
+                        <tr key={index} className="border-b border-gray-50 hover:bg-gray-50">
+                          <td className="px-4 py-3 capitalize text-gray-600" style={poppins}>{(transaction.transactionType || transaction.type || '').replace(/_/g, ' ')}</td>
+                          <td className="max-w-xs truncate px-4 py-3 text-gray-600" style={poppins}>{transaction.description || '-'}</td>
+                          <td className={`px-4 py-3 font-bold ${Number(transaction.amount) >= 0 ? 'text-green-600' : 'text-red-600'}`} style={poppins}>{fmtAmount(Number(transaction.amount))}</td>
+                          <td className="px-4 py-3"><span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${statusBadge(transaction.status)}`} style={poppins}>{transaction.status}</span></td>
+                          <td className="px-4 py-3 text-gray-500" style={poppins}>{fmt(transaction.createdAt)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+
+                {tab === 'Certificates' && (
+                  <table className="w-full text-sm">
+                    <thead><tr className="border-b border-gray-100">{['Certificate ID', 'Course', 'Status', 'Issued', 'Action'].map((heading) => <th key={heading} className="px-4 py-3 text-left font-semibold text-gray-500" style={poppins}>{heading}</th>)}</tr></thead>
+                    <tbody>
+                      {tabData.map((certificate: any, index) => (
+                        <tr key={index} className="border-b border-gray-50 hover:bg-gray-50">
+                          <td className="px-4 py-3 font-mono text-purple-700" style={poppins}>{certificate.certificateId}</td>
+                          <td className="px-4 py-3 font-semibold text-gray-900" style={poppins}>{certificate.courseName}</td>
+                          <td className="px-4 py-3"><span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${statusBadge(certificate.isRevoked ? 'revoked' : 'active')}`} style={poppins}>{certificate.isRevoked ? 'revoked' : 'valid'}</span></td>
+                          <td className="px-4 py-3 text-gray-500" style={poppins}>{fmt(certificate.issuedAt)}</td>
+                          <td className="px-4 py-3">
+                            <Link href={`/admin/certificates/${certificate.certificateId}`} className="flex items-center gap-1 text-xs text-purple-600 hover:underline" style={poppins}>View <ChevronRight className="h-3 w-3" /></Link>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+
+                {tab === 'Sessions' && (
+                  <table className="w-full text-sm">
+                    <thead><tr className="border-b border-gray-100">{['Session ID', 'Expires At', 'Status'].map((heading) => <th key={heading} className="px-4 py-3 text-left font-semibold text-gray-500" style={poppins}>{heading}</th>)}</tr></thead>
+                    <tbody>
+                      {tabData.map((session: any, index) => (
+                        <tr key={index} className="border-b border-gray-50 hover:bg-gray-50">
+                          <td className="px-4 py-3 font-mono text-xs text-gray-700" style={poppins}>{session.id}</td>
+                          <td className="px-4 py-3 text-gray-500" style={poppins}>{fmt(session.expiresAt)}</td>
+                          <td className="px-4 py-3"><span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${statusBadge(session.isExpired ? 'suspended' : 'active')}`} style={poppins}>{session.isExpired ? 'expired' : 'active'}</span></td>
                         </tr>
                       ))}
                     </tbody>
@@ -422,6 +615,15 @@ export default function AdminUserDetailPage({ params }: { params: Promise<{ user
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function FormField({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="mb-1.5 block text-sm font-semibold text-gray-700" style={poppins}>{label}</label>
+      {children}
     </div>
   );
 }

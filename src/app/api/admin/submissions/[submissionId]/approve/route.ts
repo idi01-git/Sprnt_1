@@ -1,9 +1,11 @@
-import crypto from 'crypto'
 import { prisma } from '@/lib/db'
 import { appEnv } from '@/lib/env'
 import { requireAdminOrAbove, AuthError } from '@/lib/auth/guards'
-import { createSuccessResponse, createErrorResponse, ErrorCode, notFound, serverError, HttpStatus } from '@/lib/api-response'
+import { createSuccessResponse, createErrorResponse, ErrorCode, badRequest, notFound, serverError, HttpStatus } from '@/lib/api-response'
 import { logAdminAction } from '@/lib/admin-logger'
+import { adminApproveSubmissionSchema } from '@/lib/validations/admin'
+import { sendCertificateEmail } from '@/lib/email'
+import { formatCertificateGradeLabel, generateUniqueCertificateId, getCertificateGrade, writeCertificateApprovalSnapshot, writeCertificatePdfUrl } from '@/lib/certificates'
 
 export async function POST(
     request: Request,
@@ -12,18 +14,32 @@ export async function POST(
     try {
         const { adminId } = await requireAdminOrAbove()
         const { submissionId } = await params
+        const body = await request.json().catch(() => null)
+
+        if (!body) {
+            return badRequest('Invalid JSON body')
+        }
+
+        const parsed = adminApproveSubmissionSchema.safeParse(body)
+        if (!parsed.success) {
+            return badRequest('Validation failed', { errors: parsed.error.flatten().fieldErrors })
+        }
 
         const submission = await prisma.submission.findUnique({
             where: { id: submissionId },
             include: {
                 enrollment: {
-                    include: { course: true }
+                    include: { course: true },
                 },
                 user: true,
-            }
+            },
         })
 
         if (!submission) return notFound('Submission')
+
+        const existingCertificate = await prisma.certificate.findUnique({
+            where: { enrollmentId: submission.enrollmentId },
+        })
 
         const metricsComplete =
             submission.metric1SimulationAccuracy !== null &&
@@ -48,35 +64,96 @@ export async function POST(
             )
         }
 
-        const certId = `CERT-${crypto.randomBytes(6).toString('hex').toUpperCase()}`
+        if (existingCertificate) {
+            return createSuccessResponse({
+                certificateId: existingCertificate.certificateId,
+                grade: formatCertificateGradeLabel(existingCertificate.grade),
+                studentName: existingCertificate.studentName,
+                collegeName: existingCertificate.collegeName,
+                courseName: existingCertificate.courseName,
+                qrCodeData: existingCertificate.qrCodeData,
+                certificateUrl: existingCertificate.certificateUrl,
+                certificatePdfUrl: null,
+                alreadyIssued: true,
+            })
+        }
 
         const grade = Number(submission.finalGrade)
-        let certGrade: 'Distinction' | 'First_Class' | 'Pass'
-        if (grade >= 4.5) certGrade = 'Distinction'
-        else if (grade >= 3.0) certGrade = 'First_Class'
-        else certGrade = 'Pass'
+        const certificateGrade = getCertificateGrade(grade)
+        const issueTimestamp = new Date()
+        const certificateRecord = await prisma.$transaction(async (tx) => {
+            const certificateId = await generateUniqueCertificateId(tx)
+            const verificationUrl = `${appEnv.appUrl}/verify/${certificateId}`
 
-        const [, certificate] = await prisma.$transaction([
-            prisma.submission.update({
+            await tx.submission.update({
                 where: { id: submissionId },
-                data: { reviewStatus: 'approved', reviewCompletedAt: new Date() },
-            }),
+                data: {
+                    reviewStatus: 'approved',
+                    reviewStartedAt: submission.reviewStartedAt ?? issueTimestamp,
+                    reviewCompletedAt: issueTimestamp,
+                },
+            })
 
-            prisma.enrollment.update({
+            await tx.enrollment.update({
                 where: { id: submission.enrollmentId },
-                data: { certificateIssued: true, certificateId: certId, completedAt: new Date() },
-            }),
-        ])
+                data: {
+                    certificateIssued: true,
+                    certificateId,
+                    completedAt: issueTimestamp,
+                },
+            })
+
+            const certificate = await tx.certificate.create({
+                data: {
+                    certificateId,
+                    enrollmentId: submission.enrollmentId,
+                    userId: submission.userId,
+                    courseId: submission.enrollment.courseId,
+                    studentName: parsed.data.certificateStudentName.trim(),
+                    collegeName: parsed.data.certificateCollegeName.trim(),
+                    courseName: submission.enrollment.course.courseName,
+                    grade: certificateGrade,
+                    certificateUrl: verificationUrl,
+                    qrCodeData: verificationUrl,
+                    issuedAt: issueTimestamp,
+                },
+            })
+
+            await writeCertificateApprovalSnapshot(tx, certificate.id, {
+                fullName: parsed.data.fullName.trim(),
+                dob: parsed.data.dob || null,
+                collegeName: parsed.data.collegeName.trim(),
+                branch: parsed.data.branch.trim(),
+                graduationYear: parsed.data.graduationYear,
+                collegeIdLink: parsed.data.collegeIdLink.trim(),
+            })
+            await writeCertificatePdfUrl(tx, certificate.id, parsed.data.certificatePdfUrl)
+
+            return certificate
+        })
 
         await logAdminAction(adminId, 'submission_approved', 'submission', submissionId)
+        sendCertificateEmail(
+            submission.user.email,
+            parsed.data.certificateStudentName.trim(),
+            submission.enrollment.course.courseName,
+            formatCertificateGradeLabel(certificateRecord.grade),
+            certificateRecord.certificateId,
+            { certificatePdfUrl: parsed.data.certificatePdfUrl }
+        ).catch((emailError) => {
+            console.error('[submission approval] Failed to send certificate email:', emailError)
+        })
 
         return createSuccessResponse({
-            certificateId: certId,
-            grade: certGrade,
-            studentName: submission.user.name,
-            collegeName: 'N/A',
-            courseName: submission.enrollment.course.courseName,
-            qrCodeData: `${appEnv.appUrl}/verify/${certId}`,
+            certificateId: certificateRecord.certificateId,
+            grade: formatCertificateGradeLabel(certificateRecord.grade),
+            studentName: certificateRecord.studentName,
+            collegeName: certificateRecord.collegeName,
+            courseName: certificateRecord.courseName,
+            qrCodeData: certificateRecord.qrCodeData,
+            certificateUrl: certificateRecord.certificateUrl,
+            certificatePdfUrl: parsed.data.certificatePdfUrl,
+            alreadyIssued: false,
         })
     } catch (error) {
         if (error instanceof AuthError) {

@@ -370,6 +370,51 @@ export const adminUserListQuerySchema = z.object({
 })
 export type AdminUserListQueryInput = z.infer<typeof adminUserListQuerySchema>
 
+export const adminUpdateUserSchema = z.object({
+    name: z.string().min(2).max(200).trim().optional(),
+    email: z.string().email().max(255).trim().optional(),
+    phone: z
+        .string()
+        .regex(/^\+?[1-9]\d{1,14}$/, 'Invalid phone number (E.164 format)')
+        .max(20)
+        .optional()
+        .or(z.literal('').transform(() => null))
+        .nullable(),
+    dob: z
+        .string()
+        .refine((value) => !value || !isNaN(Date.parse(value)), 'Invalid date format')
+        .optional()
+        .nullable(),
+    studyLevel: z
+        .enum([
+            'NINTH', 'TENTH', 'ELEVENTH', 'TWELFTH',
+            'COLLEGE_1', 'COLLEGE_2', 'COLLEGE_3', 'COLLEGE_4',
+            'GRADUATED',
+        ])
+        .optional()
+        .nullable(),
+    avatarUrl: z.string().url().optional().or(z.literal('').transform(() => null)).nullable(),
+    upiId: z
+        .string()
+        .min(3, 'UPI ID too short')
+        .max(100, 'UPI ID too long')
+        .regex(/^[a-zA-Z0-9._-]+@[a-zA-Z]{2,}$/, 'Invalid UPI ID format')
+        .optional()
+        .or(z.literal('').transform(() => null))
+        .nullable(),
+    referralCode: z
+        .string()
+        .min(3)
+        .max(30)
+        .regex(/^[A-Z0-9_-]+$/, 'Referral code must be uppercase letters, digits, hyphen, or underscore')
+        .optional()
+        .or(z.literal('').transform(() => null))
+        .nullable(),
+    emailVerified: z.boolean().optional(),
+    status: z.enum(['active', 'suspended']).optional(),
+})
+export type AdminUpdateUserInput = z.infer<typeof adminUpdateUserSchema>
+
 export const adminManualEnrollSchema = z.object({
     courseId: z.string().min(1, 'Course ID required'),
     reason: z.string().min(1, 'Reason required').max(500),
@@ -403,14 +448,27 @@ export const adminAssignSubmissionSchema = z.object({
 export type AdminAssignSubmissionInput = z.infer<typeof adminAssignSubmissionSchema>
 
 export const adminGradeSubmissionSchema = z.object({
-    metric1: z.coerce.number().min(0).max(5),
-    metric2: z.coerce.number().min(0).max(5),
-    metric3: z.coerce.number().min(0).max(5),
-    metric4: z.coerce.number().min(0).max(5),
-    metric5: z.coerce.number().min(0).max(5),
+    metric1: z.coerce.number().min(0).max(10),
+    metric2: z.coerce.number().min(0).max(10),
+    metric3: z.coerce.number().min(0).max(10),
+    metric4: z.coerce.number().min(0).max(10),
+    metric5: z.coerce.number().min(0).max(10),
     adminNotes: z.string().optional(),
 })
 export type AdminGradeSubmissionInput = z.infer<typeof adminGradeSubmissionSchema>
+
+export const adminApproveSubmissionSchema = z.object({
+    certificateStudentName: z.string().min(1, 'Certificate name is required').max(200),
+    certificateCollegeName: z.string().min(1, 'College name is required').max(300),
+    fullName: z.string().min(1, 'Full name is required').max(200),
+    dob: z.string().optional().nullable(),
+    collegeName: z.string().min(1, 'College name is required').max(300),
+    branch: z.string().min(1, 'Branch is required').max(50),
+    graduationYear: z.coerce.number().int().min(1900).max(3000),
+    collegeIdLink: z.string().url('College ID link must be a valid URL'),
+    certificatePdfUrl: z.string().url('Certificate PDF URL must be a valid URL'),
+})
+export type AdminApproveSubmissionInput = z.infer<typeof adminApproveSubmissionSchema>
 
 export const adminRejectSubmissionSchema = z.object({
     adminNotes: z.string().min(1, 'Rejection reason is required').max(2000),
@@ -435,6 +493,11 @@ export const adminRevokeCertificateSchema = z.object({
     reason: z.string().min(1, 'Revocation reason required').max(1000),
 })
 export type AdminRevokeCertificateInput = z.infer<typeof adminRevokeCertificateSchema>
+
+export const adminUpdateCertificateSchema = z.object({
+    certificatePdfUrl: z.string().url('Certificate PDF URL must be a valid URL'),
+})
+export type AdminUpdateCertificateInput = z.infer<typeof adminUpdateCertificateSchema>
 
 // ============================================================================
 // MODULE 22: ADMIN REFERRAL MANAGEMENT

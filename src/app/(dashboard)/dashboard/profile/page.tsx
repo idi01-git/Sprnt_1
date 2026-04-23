@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import {
-  User, Shield, CreditCard, Camera, Loader2, Link as LinkIcon,
-  CheckCircle2, XCircle, AlertCircle, Save, LogOut, Mail, Phone, Calendar, Upload
+  User, Shield, CreditCard, Loader2, Link as LinkIcon,
+  CheckCircle2, XCircle, AlertCircle, Save, LogOut, Mail, Phone, Calendar
 } from 'lucide-react';
 import {
   getUserProfile, updateUserProfile,
@@ -39,16 +40,12 @@ export default function ProfilePage() {
   // States
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingUpi, setSavingUpi] = useState(false);
-  const [uploadingAvatar, setUploadingAvatar] = useState(false);
-  const [removingAvatar, setRemovingAvatar] = useState(false);
   const [revokingSession, setRevokingSession] = useState<string | null>(null);
   
   // Feedback
   const [profileMsg, setProfileMsg] = useState({ type: '', text: '' });
   const [upiMsg, setUpiMsg] = useState({ type: '', text: '' });
   
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
   useEffect(() => {
     fetchData();
   }, []);
@@ -125,15 +122,6 @@ export default function ProfilePage() {
     }
   };
 
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    alert('Avatar upload not available in MVP');
-    if (fileInputRef.current) fileInputRef.current.value = '';
-  };
-
-  const handleRemoveAvatar = async () => {
-    alert('Avatar removal not available in MVP');
-  };
-
   const handleRevokeSession = async (sessionId: string) => {
     if (!confirm('Are you sure you want to sign out from this device?')) return;
     setRevokingSession(sessionId);
@@ -163,19 +151,6 @@ export default function ProfilePage() {
             </div>
             {/* Profile content skeleton */}
             <div className="p-6 md:p-8 space-y-6">
-              {/* Avatar */}
-              <div className="flex items-center gap-6">
-                <div className="w-24 h-24 rounded-full bg-gray-200 shrink-0" />
-                <div className="space-y-2">
-                  <div className="h-4 w-32 bg-gray-200 rounded" />
-                  <div className="h-3 w-52 bg-gray-100 rounded" />
-                  <div className="flex gap-2 mt-2">
-                    <div className="h-8 w-24 bg-gray-100 rounded-lg" />
-                    <div className="h-8 w-20 bg-gray-100 rounded-lg" />
-                  </div>
-                </div>
-              </div>
-              <div className="border-t border-gray-100" />
               {/* Fields */}
               <div className="grid sm:grid-cols-2 gap-5">
                 {[...Array(4)].map((_, i) => (
@@ -211,6 +186,24 @@ export default function ProfilePage() {
         <p className="text-gray-500 mb-8 text-sm" style={poppins}>
           Manage your personal information, security preferences, and payment details.
         </p>
+
+        <div className="mb-8 rounded-2xl border border-blue-100 bg-blue-50 p-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-lg font-bold text-blue-900" style={{ ...outfit, fontWeight: 700 }}>Certificate Verification</h2>
+              <p className="mt-1 text-sm text-blue-700" style={poppins}>
+                Verify any certificate ID using the public verification page and view the issued certificate details.
+              </p>
+            </div>
+            <Link
+              href="/verify"
+              className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+              style={poppins}
+            >
+              Verify Certificate
+            </Link>
+          </div>
+        </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           {/* Tabs */}
@@ -248,64 +241,6 @@ export default function ProfilePage() {
             {/* 1. PERSONAL INFO TAB */}
             {activeTab === 'profile' && profile && (
               <div className="animate-fade-in">
-                {/* Avatar Section */}
-                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8">
-                  <div className="relative group">
-                    <div className="w-24 h-24 rounded-full overflow-hidden bg-purple-100 border-4 border-purple-50 flex flex-col items-center justify-center relative">
-                      {uploadingAvatar ? (
-                        <Loader2 className="w-8 h-8 text-purple-600 animate-spin" />
-                      ) : profile.avatarUrl ? (
-                        <img src={profile.avatarUrl} alt="Profile" className="w-full h-full object-cover" />
-                      ) : (
-                        <span className="text-3xl font-bold text-purple-700" style={outfit}>
-                          {profile.name?.charAt(0).toUpperCase() || 'U'}
-                        </span>
-                      )}
-                      
-                      {/* Hover Overlay */}
-                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-white"
-                           onClick={() => fileInputRef.current?.click()}>
-                        <Camera className="w-6 h-6" />
-                      </div>
-                    </div>
-                    <input 
-                      type="file" 
-                      ref={fileInputRef} 
-                      className="hidden" 
-                      accept="image/jpeg,image/png,image/webp" 
-                      onChange={handleAvatarUpload}
-                    />
-                  </div>
-                  <div className="text-center sm:text-left">
-                    <h3 className="text-lg font-bold text-gray-900" style={outfit}>Profile Picture</h3>
-                    <p className="text-sm text-gray-500 max-w-sm mt-1" style={poppins}>
-                      Upload a square image, max 5MB in size. We recommend 512x512px.
-                    </p>
-                    <div className="flex items-center gap-3 mt-3 justify-center sm:justify-start">
-                      <button 
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={uploadingAvatar}
-                        className="px-4 py-1.5 rounded-lg bg-gray-100 text-gray-700 text-sm hover:bg-gray-200 transition-colors flex items-center gap-2"
-                        style={{ ...poppins, fontWeight: 500 }}
-                      >
-                        <Upload className="w-3.5 h-3.5" /> Upload new
-                      </button>
-                      {profile.avatarUrl && (
-                        <button 
-                          onClick={handleRemoveAvatar}
-                          disabled={removingAvatar}
-                          className="px-4 py-1.5 rounded-lg border border-red-200 text-red-600 text-sm hover:bg-red-50 transition-colors"
-                          style={{ ...poppins, fontWeight: 500 }}
-                        >
-                          Remove
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="border-t border-gray-100 mb-8" />
-
                 <form onSubmit={handleProfileSave} className="space-y-5">
                   <div className="grid sm:grid-cols-2 gap-5 mb-2">
                     {/* Name */}

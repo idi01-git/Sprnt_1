@@ -7,11 +7,12 @@ import {
     HttpStatus,
     ErrorCode,
 } from '@/lib/api-response'
+import { formatCertificateGradeLabel, readCertificateApprovalSnapshot } from '@/lib/certificates'
 
 /**
  * GET /api/verify/{certificateId}
  * Public endpoint: Verify a certificate by its ID (from QR scan).
- * No auth required — this is public-facing.
+ * No auth required.
  */
 export async function GET(
     request: NextRequest,
@@ -20,48 +21,73 @@ export async function GET(
     try {
         const { certificateId } = await params
 
-        const enrollment = await prisma.enrollment.findFirst({
-            where: { certificateId, certificateIssued: true },
+        const certificate = await prisma.certificate.findUnique({
+            where: { certificateId },
             select: {
+                id: true,
                 certificateId: true,
-                certificateIssued: true,
-                completedAt: true,
-                user: {
-                    select: {
-                        name: true,
-                    },
-                },
+                studentName: true,
+                collegeName: true,
+                courseName: true,
+                grade: true,
+                issuedAt: true,
+                isRevoked: true,
+                revocationReason: true,
                 course: {
                     select: {
-                        courseName: true,
                         affiliatedBranch: true,
                     },
                 },
-                submission: {
+                enrollment: {
                     select: {
-                        gradeCategory: true,
+                        submission: {
+                            select: {
+                                finalGrade: true,
+                                gradeCategory: true,
+                                dob: true,
+                            },
+                        },
                     },
                 },
             },
         })
 
-        if (!enrollment) {
+        if (!certificate) {
             return createErrorResponse(
-                ErrorCode.NOT_FOUND,
+                ErrorCode.CERTIFICATE_NOT_FOUND,
                 'Certificate not found. This certificate ID does not exist.',
                 HttpStatus.NOT_FOUND
             )
         }
 
+        const approvalSnapshot = await readCertificateApprovalSnapshot(prisma, certificate.id, { collegeName: certificate.collegeName })
+
+        await prisma.certificateVerification.create({
+            data: {
+                certificateId,
+                ipAddress: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? null,
+                userAgent: request.headers.get('user-agent'),
+            },
+        })
+
         return createSuccessResponse({
-            valid: enrollment.certificateIssued,
+            valid: !certificate.isRevoked,
+            status: certificate.isRevoked ? 'revoked' : 'valid',
             certificate: {
-                certificateId: enrollment.certificateId,
-                studentName: enrollment.user.name,
-                courseName: enrollment.course.courseName,
-                branch: enrollment.course.affiliatedBranch,
-                grade: enrollment.submission?.gradeCategory,
-                issuedAt: enrollment.completedAt,
+                certificateId: certificate.certificateId,
+                studentName: certificate.studentName,
+                collegeName: certificate.collegeName,
+                courseName: certificate.courseName,
+                branch: certificate.course.affiliatedBranch,
+                stream: approvalSnapshot.branch || certificate.course.affiliatedBranch,
+                dateOfBirth: approvalSnapshot.dob ?? certificate.enrollment.submission?.dob?.toISOString() ?? null,
+                finalScore: certificate.enrollment.submission?.finalGrade !== null && certificate.enrollment.submission?.finalGrade !== undefined
+                    ? Number(certificate.enrollment.submission.finalGrade)
+                    : null,
+                grade: formatCertificateGradeLabel(certificate.grade),
+                gradeCategory: certificate.enrollment.submission?.gradeCategory ?? null,
+                issuedAt: certificate.issuedAt,
+                revocationReason: certificate.revocationReason,
             },
         })
     } catch (error) {

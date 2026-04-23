@@ -11,6 +11,7 @@ import {
 } from '@/lib/api-response'
 import { StudyLevel } from '@/generated/prisma/client'
 import { createUniqueReferralCode } from '@/lib/referrals'
+import { sendWelcomeEmail } from '@/lib/email'
 
 const GOOGLE_PROVIDER_ID = 'google'
 
@@ -196,6 +197,9 @@ export async function POST(request: Request) {
 
         // 5. Create session
         await createSession(newUser.id)
+        sendWelcomeEmail(newUser.email, newUser.name).catch((error) => {
+            console.error('[POST /api/auth/google] Failed to send welcome email:', error)
+        })
 
         // Check if profile needs completion (phone, dob, or studyLevel is missing)
         const needsProfileCompletion = !newUser.phone && !newUser.dob && !newUser.studyLevel

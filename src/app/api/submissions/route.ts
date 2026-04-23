@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/db'
 import { validateRequest } from '@/lib/auth/session'
+import { sendSubmissionReceivedEmail } from '@/lib/email'
 import {
     createSuccessResponse,
     createErrorResponse,
@@ -60,6 +61,11 @@ export async function POST(request: NextRequest) {
                 paymentStatus: true,
                 day7Completed: true,
                 courseId: true,
+                course: {
+                    select: {
+                        courseName: true,
+                    },
+                },
             },
         })
 
@@ -137,6 +143,16 @@ export async function POST(request: NextRequest) {
 
             return sub
         })
+
+        if (user.email) {
+            sendSubmissionReceivedEmail(
+                user.email,
+                user.name || user.email,
+                enrollment.course.courseName,
+            ).catch((error) => {
+                console.error('[POST /api/submissions] Failed to send submission email:', error)
+            })
+        }
 
         return createSuccessResponse(
             {

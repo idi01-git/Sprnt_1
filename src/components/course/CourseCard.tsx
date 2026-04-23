@@ -10,6 +10,7 @@ interface CourseCardProps {
   course: Course;
   index?: number;
   popular?: boolean;
+  purchased?: boolean;
 }
 
 const getBranchGradient = (branch: string): string => {
@@ -31,7 +32,7 @@ const formatPrice = (price: number): string => {
   }).format(price);
 };
 
-export function CourseCard({ course, index = 0, popular = false }: CourseCardProps) {
+export function CourseCard({ course, index = 0, popular = false, purchased = false }: CourseCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const router = useRouter();
   const gradient = getBranchGradient(course.affiliatedBranch);
@@ -303,6 +304,14 @@ export function CourseCard({ course, index = 0, popular = false }: CourseCardPro
                   </span>
                 )}
               </div>
+              {purchased && (
+                <span
+                  className="rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700"
+                  style={{ fontFamily: "'Poppins', sans-serif" }}
+                >
+                  Already Purchased
+                </span>
+              )}
             </div>
 
             {/* Enhanced 3D CTA Button */}
@@ -350,7 +359,7 @@ export function CourseCard({ course, index = 0, popular = false }: CourseCardPro
                 }}
               >
                 <Award className="w-5 h-5 group-hover/btn:rotate-12 transition-transform duration-300" />
-                Enroll Now
+                {purchased ? 'Open Course' : 'Enroll Now'}
               </span>
             </button>
           </div>

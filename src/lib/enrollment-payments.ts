@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db'
+import { sendEnrollmentEmail } from '@/lib/email'
 import { createOrder, PaymentError, verifyPayment } from '@/lib/payments'
 import { ErrorCode } from '@/lib/api-response'
 import { paymentEnv } from '@/lib/env'
@@ -254,7 +255,7 @@ export async function verifyEnrollmentPayment(
 
     const courseWithModules = await prisma.course.findUnique({
         where: { id: enrollment.courseId },
-        select: { totalDays: true, _count: { select: { modules: true } } },
+        select: { totalDays: true, courseName: true, _count: { select: { modules: true } } },
     })
     const moduleCount = courseWithModules?.totalDays || courseWithModules?._count.modules || 7
 
@@ -348,6 +349,21 @@ export async function verifyEnrollmentPayment(
             }
         }
     })
+
+    const enrolledUser = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { email: true, name: true },
+    })
+
+    if (enrolledUser?.email && enrolledUser.name) {
+        sendEnrollmentEmail(
+            enrolledUser.email,
+            enrolledUser.name,
+            courseWithModules?.courseName || 'your course',
+        ).catch((error) => {
+            console.error('[Enrollment Payment] Failed to send enrollment email:', error)
+        })
+    }
 
     return {
         enrollmentId: enrollment.id,
