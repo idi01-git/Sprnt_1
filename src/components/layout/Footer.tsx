@@ -1,7 +1,8 @@
 'use client';
 
-import { Mail, Phone, MapPin, Instagram, Linkedin } from 'lucide-react';
+import { Mail, Phone, MapPin, Instagram, Linkedin, Send } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const footerLinks = {
   product: [
@@ -31,98 +32,90 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { icon: Instagram, href: 'https://www.instagram.com/idi01_insta?igsh=c2ljZzNkYmpyMm55', color: 'from-pink-500 to-rose-500' },
-  { icon: Linkedin, href: 'https://www.linkedin.com/company/sprintern/', color: 'from-blue-600 to-blue-700' },
-  // { icon: Twitter, href: '#', color: 'from-sky-400 to-blue-500' },
-  // { icon: Youtube, href: '#', color: 'from-red-500 to-red-600' }
+  { icon: Instagram, href: 'https://www.instagram.com/idi01_insta?igsh=c2ljZzNkYmpyMm55', bg: '#FF6B9D' },
+  { icon: Linkedin, href: 'https://www.linkedin.com/company/sprintern/', bg: '#A8E6FF' },
 ];
 
 export function Footer() {
   return (
-    <footer className="relative bg-linear-to-br from-gray-900 via-purple-900 to-gray-900 text-white overflow-hidden">
-      {/* Animated Background */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div
-          className="absolute top-0 left-0 w-96 h-96 bg-purple-500 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob"
-        />
-        <div
-          className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob animation-delay-2000"
-        />
-      </div>
+    <footer className="relative overflow-hidden pt-12" style={{ background: '#FFF8E7', color: '#1a1a2e' }}>
+      {/* Top border - thick neo-brutalist line */}
+      <div className="h-[6px] w-full bg-[#1a1a2e]" />
 
-      <div className="max-w-7xl mx-auto px-6 py-16 relative z-10">
-        {/* Top Section */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-6 gap-12 mb-12">
-          {/* Brand Column */}
+      <div className="max-w-7xl mx-auto px-6 py-20 relative z-10">
+        {/* Newsletter / CTA Section */}
+        <div className="mb-20 p-8 rounded-3xl bg-[#FFE156] border-[4px] border-[#1a1a2e] flex flex-col md:flex-row items-center justify-between gap-8" style={{ boxShadow: '10px 10px 0 #1a1a2e' }}>
+          <div className="max-w-md">
+            <h3 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 900, fontSize: '32px', lineHeight: '1.1', color: '#1a1a2e' }}>
+              JOIN THE SPRINTERN.
+            </h3>
+            <p className="mt-2" style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: '16px', color: '#1a1a2e', opacity: 0.8 }}>
+              Get the latest course updates and engineering tips directly in your inbox.
+            </p>
+          </div>
+          <div className="w-full md:w-auto flex gap-3">
+            <input 
+              type="email" 
+              placeholder="your@email.com" 
+              className="neo-input flex-1 md:w-64 bg-white"
+              style={{ fontFamily: "'Poppins', sans-serif" }}
+            />
+            <button className="neo-btn neo-btn-primary p-4 aspect-square flex items-center justify-center">
+              <Send className="w-6 h-6" />
+            </button>
+          </div>
+        </div>
+
+        {/* Main Section */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-6 gap-12 mb-16">
+          {/* Brand */}
           <div className="lg:col-span-2">
-            <div className="flex items-center gap-3 mb-6 animate-fade-in">
-              <img
-                src="/images/logo.png"
-                alt="Logo"
-                className="h-12 w-auto"
+            <div className="inline-block p-4 bg-white rounded-2xl border-[3px] border-[#1a1a2e] mb-8" style={{ boxShadow: '5px 5px 0 #1a1a2e' }}>
+              <Image
+                src="/images/logo1.png"
+                alt="Sprintern logo"
+                width={460}
+                height={300}
+                className="h-10 w-40 object-cover -mt-3"
               />
             </div>
-
-            <p
-              className="text-gray-400 mb-6 animate-fade-in animation-delay-100"
-              style={{ 
-                fontFamily: "'Poppins', sans-serif",
-                fontWeight: 400,
-                fontSize: '15px',
-                lineHeight: '1.7'
-              }}
-            >
-              Transform your career with industry-standard tools and real-world projects in just 14 days.
+            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: '16px', lineHeight: '1.7', color: '#1a1a2e', opacity: 0.8 }}>
+              Transform your career with industry-standard tools and real-world projects in just 14 days. Verified by faculty, trusted by industry.
             </p>
 
-            {/* Social Links */}
-            <div className="flex gap-3 animate-fade-in animation-delay-200">
-              {socialLinks.map((social, index) => (
+            {/* Social */}
+            <div className="flex gap-4 mt-8">
+              {socialLinks.map((social, i) => (
                 <a
-                  key={index}
+                  key={i}
                   href={social.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="w-11 h-11 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all group hover:scale-110 hover:-translate-y-0.5 active:scale-95"
+                  className="w-12 h-12 rounded-xl flex items-center justify-center transition-all border-[3px] border-[#1a1a2e] hover:translate-x-[-2px] hover:translate-y-[-2px]"
+                  style={{ background: social.bg, boxShadow: '4px 4px 0 #1a1a2e' }}
                 >
-                  <social.icon className="w-5 h-5 text-white" />
+                  <social.icon className="w-6 h-6" style={{ color: '#1a1a2e' }} />
                 </a>
               ))}
             </div>
           </div>
 
-          {/* Links Columns */}
-          {Object.entries(footerLinks).map(([category, links], categoryIndex) => (
-            <div
-              key={category}
-              className="animate-fade-in"
-              style={{ animationDelay: `${categoryIndex * 100}ms` }}
-            >
-              <h4
-                className="mb-6 text-white"
-                style={{ 
-                  fontFamily: "'Outfit', sans-serif",
-                  fontWeight: 700,
-                  fontSize: '16px',
-                  textTransform: 'capitalize'
-                }}
-              >
+          {/* Links */}
+          {Object.entries(footerLinks).map(([category, links]) => (
+            <div key={category}>
+              <h4 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 900, fontSize: '18px', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#1a1a2e', marginBottom: '2rem' }}>
                 {category}
               </h4>
-              <ul className="space-y-3">
-                {links.map((link, index) => (
-                  <li key={index}>
+              <ul className="space-y-4">
+                {links.map((link, i) => (
+                  <li key={i}>
                     <Link
                       href={link.href}
-                      className="text-gray-400 hover:text-white transition-all inline-block relative group hover:translate-x-1"
-                      style={{ 
-                        fontFamily: "'Poppins', sans-serif",
-                        fontWeight: 400,
-                        fontSize: '14px'
-                      }}
+                      className="relative inline-block transition-all text-[#1a1a2e] opacity-70 hover:opacity-100 hover:text-[#FF6B9D] hover:-translate-y-0.5 group pb-1"
+                      style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: '15px' }}
                     >
                       {link.name}
-                      <span className="absolute bottom-0 left-0 w-0 h-px bg-linear-to-r from-purple-500 to-blue-500 group-hover:w-full transition-all duration-300" />
+                      <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-[#1a1a2e] transition-all duration-300 group-hover:w-full" />
                     </Link>
                   </li>
                 ))}
@@ -131,83 +124,43 @@ export function Footer() {
           ))}
         </div>
 
-        {/* Contact Info */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12 p-8 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 animate-fade-in">
+        {/* Contact Strip */}
+        <div className="grid md:grid-cols-3 gap-8 mb-16">
           {[
-            { icon: Mail, text: 'support@sprintern.com', label: 'Email' },
-            { icon: Phone, text: '+91 98765 43210', label: 'Phone' },
-            { icon: MapPin, text: 'Lucknow, India', label: 'Location' }
-          ].map((contact, index) => (
-            <div
-              key={index}
-              className="flex items-center gap-4 transition-transform duration-200 hover:translate-x-1"
+            { icon: Mail, text: 'support@sprintern.com', label: 'Email Us', bg: '#A8E6FF' },
+            { icon: Phone, text: '+91 98765 43210', label: 'Call Us', bg: '#95E77E' },
+            { icon: MapPin, text: 'Lucknow, India', label: 'Visit Us', bg: '#FFD4B8' }
+          ].map((c, i) => (
+            <div 
+              key={i} 
+              className="flex items-center gap-5 p-5 rounded-2xl border-[3px] border-[#1a1a2e] bg-white transition-all hover:translate-x-[-2px] hover:translate-y-[-2px]" 
+              style={{ boxShadow: '6px 6px 0 #1a1a2e' }}
             >
-              <div className="w-12 h-12 rounded-xl bg-linear-to-br from-purple-600 to-blue-600 flex items-center justify-center shrink-0">
-                <contact.icon className="w-6 h-6 text-white" />
+              <div className="w-14 h-14 rounded-xl flex items-center justify-center shrink-0 border-[3px] border-[#1a1a2e]" style={{ background: c.bg }}>
+                <c.icon className="w-7 h-7" style={{ color: '#1a1a2e' }} />
               </div>
               <div>
-                <div
-                  className="text-gray-400 mb-1"
-                  style={{ 
-                    fontFamily: "'Poppins', sans-serif",
-                    fontWeight: 400,
-                    fontSize: '12px'
-                  }}
-                >
-                  {contact.label}
-                </div>
-                <div
-                  className="text-white"
-                  style={{ 
-                    fontFamily: "'Poppins', sans-serif",
-                    fontWeight: 600,
-                    fontSize: '14px'
-                  }}
-                >
-                  {contact.text}
-                </div>
+                <div style={{ fontFamily: "'Poppins', sans-serif", fontSize: '12px', fontWeight: 800, color: '#1a1a2e', opacity: 0.5, textTransform: 'uppercase' }}>{c.label}</div>
+                <div style={{ fontFamily: "'Poppins', sans-serif", fontSize: '15px', fontWeight: 800, color: '#1a1a2e' }}>{c.text}</div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Bottom Section */}
-        <div className="pt-8 border-t border-white/10 animate-fade-in">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p
-              className="text-gray-400 text-center md:text-left"
-              style={{ 
-                fontFamily: "'Poppins', sans-serif",
-                fontWeight: 400,
-                fontSize: '14px'
-              }}
-            >
-              © 2026 SPRINTERN. All rights reserved. Built with ❤️ for Core Engineers.
+        {/* Bottom Bar */}
+        <div className="pt-10 border-t-[3px] border-[#1a1a2e]">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <p style={{ fontFamily: "'Poppins', sans-serif", fontSize: '14px', fontWeight: 700, color: '#1a1a2e', opacity: 0.6 }}>
+              © 2026 SPRINTERN. ALL RIGHTS RESERVED. MADE BY CORE ENGINEERS.
             </p>
-
-            <div className="flex items-center gap-6">
-              <a
-                href="#"
-                className="text-gray-400 hover:text-white transition-all hover:-translate-y-0.5"
-                style={{ 
-                  fontFamily: "'Poppins', sans-serif",
-                  fontWeight: 400,
-                  fontSize: '14px'
-                }}
-              >
-                Status
-              </a>
-              <a
-                href="#"
-                className="text-gray-400 hover:text-white transition-all hover:-translate-y-0.5"
-                style={{ 
-                  fontFamily: "'Poppins', sans-serif",
-                  fontWeight: 400,
-                  fontSize: '14px'
-                }}
-              >
-                Sitemap
-              </a>
+            <div className="flex items-center gap-8">
+              {['Status', 'Sitemap'].map(t => (
+                <a key={t} href="#" style={{ fontFamily: "'Poppins', sans-serif", fontSize: '14px', fontWeight: 800, color: '#1a1a2e', opacity: 0.6 }}
+                  className="hover:text-[#FF6B9D] transition-all"
+                >
+                  {t}
+                </a>
+              ))}
             </div>
           </div>
         </div>

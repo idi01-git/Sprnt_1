@@ -6,16 +6,15 @@ interface StatItem {
   label: string;
   value: string;
   icon: React.ElementType;
-  color: string;
-  neon: string;
+  bg: string;
 }
 
 const StatsLoop = () => {
   const stats: StatItem[] = [
-    { label: 'Total Duration', value: '14 Days', icon: Clock, color: 'from-purple-500 to-violet-600', neon: 'rgba(139, 92, 246, 0.3)' },
-    { label: 'Learning Phases', value: '6 Stages', icon: Target, color: 'from-blue-500 to-cyan-600', neon: 'rgba(59, 130, 246, 0.3)' },
-    { label: 'Active Projects', value: '1 Major', icon: Code, color: 'from-emerald-500 to-teal-600', neon: 'rgba(16, 185, 129, 0.3)' },
-    { label: 'Students Enrolled', value: '15K+', icon: Users, color: 'from-orange-500 to-pink-600', neon: 'rgba(249, 115, 22, 0.3)' },
+    { label: 'Total Duration', value: '14 Days', icon: Clock, bg: '#B084FF' },
+    { label: 'Learning Phases', value: '6 Stages', icon: Target, bg: '#4ECDC4' },
+    { label: 'Active Projects', value: '1 Major', icon: Code, bg: '#95E77E' },
+    { label: 'Students Enrolled', value: '15K+', icon: Users, bg: '#FF6B9D' },
   ];
 
   const duplicatedStats = [...stats, ...stats, ...stats];
@@ -24,73 +23,42 @@ const StatsLoop = () => {
     <div className="relative w-full overflow-hidden mb-16">
       {/* Fade edges */}
       <div
-        className="absolute left-0 top-0 bottom-0 w-16 md:w-24 z-10 pointer-events-none"
-        style={{ background: 'linear-gradient(to right, rgba(250, 245, 255, 1), transparent)' }}
+        className="absolute left-0 top-0 bottom-0 w-8 md:w-12 z-10 pointer-events-none"
+        style={{ background: 'linear-gradient(to right, #FFF8E7, transparent)' }}
       />
       <div
-        className="absolute right-0 top-0 bottom-0 w-16 md:w-24 z-10 pointer-events-none"
-        style={{ background: 'linear-gradient(to left, rgba(250, 245, 255, 1), transparent)' }}
+        className="absolute right-0 top-0 bottom-0 w-8 md:w-12 z-10 pointer-events-none"
+        style={{ background: 'linear-gradient(to left, #FFF8E7, transparent)' }}
       />
 
       {/* Scrolling container */}
       <div
         className="stats-loop-track flex items-center gap-6 py-4"
-        style={{
-          animation: 'statsLoop 30s linear infinite',
-          width: 'max-content',
-        }}
+        style={{ animation: 'statsLoop 30s linear infinite', width: 'max-content' }}
       >
         {duplicatedStats.map((stat, idx) => {
           const Icon = stat.icon;
           return (
-            <div
-              key={idx}
-              className="relative group flex-shrink-0"
-              style={{ width: '180px' }}
-            >
-              {/* 3D Shadow */}
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-200/30 to-blue-200/30 rounded-2xl transform translate-y-0 translate-x-0 group-hover:translate-y-1 group-hover:translate-x-1 transition-all duration-300 ease-out" />
-
-              {/* Neon Glow Ring */}
+            <div key={idx} className="flex-shrink-0" style={{ width: '180px' }}>
               <div
-                className="absolute -inset-1 rounded-2xl opacity-0 group-hover:opacity-50 transition-all duration-500 blur-lg"
-                style={{ background: `linear-gradient(135deg, ${stat.neon}, ${stat.neon})` }}
-              />
-
-              {/* Card */}
-              <div
-                className="relative backdrop-blur-2xl rounded-2xl p-4 border border-white/60 bg-gradient-to-br from-white/80 to-white/60 hover:from-white/90 hover:to-white/80 transition-all duration-300 hover:-translate-y-1 hover:-translate-x-1 text-center"
-                style={{ boxShadow: '0 4px 16px rgba(139, 92, 246, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.8)' }}
+                className="rounded-2xl p-4 text-center cursor-pointer transition-all duration-150 hover:translate-x-[-2px] hover:translate-y-[-2px]"
+                style={{
+                  background: stat.bg,
+                  border: '3px solid #1a1a2e',
+                  boxShadow: '4px 4px 0 #1a1a2e',
+                }}
               >
-                {/* Shine effect */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/50 to-white/0 opacity-0 group-hover:opacity-100 transform -translate-x-full group-hover:translate-x-full transition-all duration-700 ease-in-out rounded-2xl" />
-
                 <div
-                  className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-2 mx-auto group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 ease-out`}
-                  style={{ boxShadow: `0 4px 12px ${stat.neon}` }}
+                  className="w-10 h-10 rounded-xl flex items-center justify-center mb-2 mx-auto"
+                  style={{ background: '#fff', border: '2px solid #1a1a2e' }}
                 >
-                  <Icon className="w-5 h-5 text-white" />
+                  <Icon className="w-5 h-5" style={{ color: '#1a1a2e' }} />
                 </div>
 
-                <div
-                  className={`bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-1`}
-                  style={{
-                    fontFamily: "'Outfit', sans-serif",
-                    fontWeight: 800,
-                    fontSize: '20px',
-                  }}
-                >
+                <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: '20px', color: '#1a1a2e' }}>
                   {stat.value}
                 </div>
-
-                <div
-                  className="text-gray-600"
-                  style={{
-                    fontFamily: "'Poppins', sans-serif",
-                    fontWeight: 500,
-                    fontSize: '11px',
-                  }}
-                >
+                <div style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: '11px', color: '#1a1a2e', opacity: 0.7 }}>
                   {stat.label}
                 </div>
               </div>

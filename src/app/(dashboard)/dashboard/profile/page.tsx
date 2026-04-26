@@ -141,31 +141,20 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen pt-12 md:pt-24 pb-16 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto animate-pulse">
-          {/* Page title */}
-          <div className="h-9 w-56 bg-gray-200 rounded-lg mb-2" />
-          <div className="h-4 w-72 bg-gray-100 rounded mb-8" />
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            {/* Tab bar skeleton */}
-            <div className="flex border-b border-gray-100 px-2 pt-2 gap-2">
-              {[...Array(3)].map((_, i) => <div key={i} className="h-10 w-32 bg-gray-100 rounded-t-lg" />)}
+          <div className="h-9 w-56 bg-neo-yellow/50 rounded-lg mb-2 border-2 border-neo-black" />
+          <div className="h-4 w-72 bg-neo-peach/50 rounded mb-8 border-2 border-neo-black" />
+          <div className="bg-white rounded-2xl border-3 border-neo-black overflow-hidden" style={{boxShadow:'5px 5px 0 #1a1a2e'}}>
+            <div className="flex border-b-3 border-neo-black px-2 pt-2 gap-2">
+              {[...Array(3)].map((_, i) => <div key={i} className="h-10 w-32 bg-neo-cream rounded-t-lg border-2 border-neo-black" />)}
             </div>
-            {/* Profile content skeleton */}
             <div className="p-6 md:p-8 space-y-6">
-              {/* Fields */}
               <div className="grid sm:grid-cols-2 gap-5">
                 {[...Array(4)].map((_, i) => (
                   <div key={i} className="space-y-2">
-                    <div className="h-3.5 w-24 bg-gray-200 rounded" />
-                    <div className="h-11 bg-gray-100 rounded-xl" />
+                    <div className="h-3.5 w-24 bg-neo-mint/50 rounded" />
+                    <div className="h-11 bg-neo-cream rounded-xl border-2 border-neo-black" />
                   </div>
                 ))}
-                <div className="sm:col-span-2 space-y-2">
-                  <div className="h-3.5 w-32 bg-gray-200 rounded" />
-                  <div className="h-11 bg-gray-100 rounded-xl" />
-                </div>
-              </div>
-              <div className="flex justify-end">
-                <div className="h-11 w-36 bg-gray-200 rounded-xl" />
               </div>
             </div>
           </div>
@@ -174,30 +163,36 @@ export default function ProfilePage() {
     );
   }
 
-  const inputClass = "w-full px-4 py-3 rounded-xl border border-gray-200 text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm";
-  const labelClass = "block text-sm mb-1.5 font-semibold text-gray-700";
+  const inputClass = "neo-input";
+  const labelClass = "block text-sm mb-1.5 font-bold text-neo-black";
+
+  const tabItems = [
+    { key: 'profile' as const, icon: User, label: 'Personal Info', color: 'bg-neo-yellow' },
+    { key: 'security' as const, icon: Shield, label: 'Security', color: 'bg-neo-blue' },
+    { key: 'payment' as const, icon: CreditCard, label: 'Payment', color: 'bg-neo-green' },
+  ];
 
   return (
     <div className="min-h-screen pt-12 md:pt-24 pb-16 px-4 sm:px-6">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2" style={{ ...outfit, fontWeight: 800 }}>
+        <h1 className="text-3xl font-extrabold text-neo-black mb-2" style={{ ...outfit, fontWeight: 800 }}>
           Profile & Settings
         </h1>
-        <p className="text-gray-500 mb-8 text-sm" style={poppins}>
+        <p className="text-neo-black/60 mb-8 text-sm font-semibold" style={poppins}>
           Manage your personal information, security preferences, and payment details.
         </p>
 
-        <div className="mb-8 rounded-2xl border border-blue-100 bg-blue-50 p-5">
+        <div className="mb-8 rounded-2xl bg-neo-sky p-5 border-3 border-neo-black" style={{boxShadow:'5px 5px 0 #1a1a2e'}}>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-lg font-bold text-blue-900" style={{ ...outfit, fontWeight: 700 }}>Certificate Verification</h2>
-              <p className="mt-1 text-sm text-blue-700" style={poppins}>
-                Verify any certificate ID using the public verification page and view the issued certificate details.
+              <h2 className="text-lg font-extrabold text-neo-black" style={{ ...outfit }}>Certificate Verification</h2>
+              <p className="mt-1 text-sm text-neo-black/70 font-semibold" style={poppins}>
+                Verify any certificate ID using the public verification page.
               </p>
             </div>
             <Link
               href="/verify"
-              className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+              className="neo-btn neo-btn-primary inline-flex items-center justify-center px-4 py-2.5 text-sm"
               style={poppins}
             >
               Verify Certificate
@@ -205,45 +200,29 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="neo-card-static overflow-hidden">
           {/* Tabs */}
-          <div className="flex border-b border-gray-100 overflow-x-auto scroolbar-hide">
-            <button
-              onClick={() => setActiveTab('profile')}
-              className={`flex items-center gap-2 px-6 py-4 text-sm font-semibold transition-colors whitespace-nowrap ${
-                activeTab === 'profile' ? 'text-purple-600 border-b-2 border-purple-600 bg-purple-50/50' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-              }`}
-              style={poppins}
-            >
-              <User className="w-4 h-4" /> Personal Info
-            </button>
-            <button
-              onClick={() => setActiveTab('security')}
-              className={`flex items-center gap-2 px-6 py-4 text-sm font-semibold transition-colors whitespace-nowrap ${
-                activeTab === 'security' ? 'text-purple-600 border-b-2 border-purple-600 bg-purple-50/50' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-              }`}
-              style={poppins}
-            >
-              <Shield className="w-4 h-4" /> Security
-            </button>
-            <button
-              onClick={() => setActiveTab('payment')}
-              className={`flex items-center gap-2 px-6 py-4 text-sm font-semibold transition-colors whitespace-nowrap ${
-                activeTab === 'payment' ? 'text-purple-600 border-b-2 border-purple-600 bg-purple-50/50' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-              }`}
-              style={poppins}
-            >
-              <CreditCard className="w-4 h-4" /> Payment Details
-            </button>
+          <div className="flex border-b-3 border-neo-black overflow-x-auto">
+            {tabItems.map((item) => (
+              <button
+                key={item.key}
+                onClick={() => setActiveTab(item.key)}
+                className={`flex items-center gap-2 px-6 py-4 text-sm font-bold transition-colors whitespace-nowrap border-r-2 border-neo-black last:border-r-0 ${
+                  activeTab === item.key ? `${item.color} text-neo-black` : 'text-neo-black/50 hover:bg-neo-cream'
+                }`}
+                style={poppins}
+              >
+                <item.icon className="w-4 h-4" /> {item.label}
+              </button>
+            ))}
           </div>
 
           <div className="p-6 md:p-8">
             {/* 1. PERSONAL INFO TAB */}
             {activeTab === 'profile' && profile && (
-              <div className="animate-fade-in">
+              <div className="animate-neo-slide-in">
                 <form onSubmit={handleProfileSave} className="space-y-5">
                   <div className="grid sm:grid-cols-2 gap-5 mb-2">
-                    {/* Name */}
                     <div>
                       <label className={labelClass} style={poppins}>Full Name</label>
                       <input 
@@ -255,24 +234,23 @@ export default function ProfilePage() {
                       />
                     </div>
                     
-                    {/* Email (Readonly + Status) */}
                     <div>
                       <label className={labelClass} style={poppins}>Email Address</label>
                       <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neo-black/40" />
                         <input 
                           type="text" 
                           value={profile.email} 
                           readOnly 
-                          className="w-full pl-9 pr-24 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-600 outline-none text-sm cursor-not-allowed" style={poppins} 
+                          className="neo-input pl-9 pr-24 bg-neo-cream cursor-not-allowed opacity-70" style={poppins} 
                         />
                         <div className="absolute right-3 top-1/2 -translate-y-1/2">
                           {profile.emailVerified ? (
-                            <span className="flex items-center gap-1 text-green-600 text-xs font-semibold bg-green-50 px-2 py-1 rounded-md">
+                            <span className="neo-badge bg-neo-green text-[10px]">
                               <CheckCircle2 className="w-3 h-3" /> Verified
                             </span>
                           ) : (
-                            <span className="flex items-center gap-1 text-amber-600 text-xs font-semibold bg-amber-50 px-2 py-1 rounded-md">
+                            <span className="neo-badge bg-neo-orange text-[10px]">
                               <AlertCircle className="w-3 h-3" /> Unverified
                             </span>
                           )}
@@ -280,42 +258,39 @@ export default function ProfilePage() {
                       </div>
                     </div>
 
-                    {/* Phone */}
                     <div>
                       <label className={labelClass} style={poppins}>Phone Number</label>
                       <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neo-black/40" />
                         <input 
                           type="text" 
                           placeholder="Your contact number"
                           value={profileForm.phone} 
                           onChange={e => setProfileForm(p => ({ ...p, phone: e.target.value }))}
-                          className={`pl-9 ${inputClass}`} style={poppins} 
+                          className={`${inputClass} pl-9`} style={poppins} 
                         />
                       </div>
                     </div>
 
-                    {/* Date of Birth */}
                     <div>
                       <label className={labelClass} style={poppins}>Date of Birth</label>
                       <div className="relative">
-                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neo-black/40" />
                         <input 
                           type="date" 
                           value={profileForm.dob ? profileForm.dob.split('T')[0] : ''} 
                           onChange={e => setProfileForm(p => ({ ...p, dob: e.target.value ? new Date(e.target.value).toISOString() : '' }))}
-                          className={`pl-9 ${inputClass}`} style={poppins} 
+                          className={`${inputClass} pl-9`} style={poppins} 
                         />
                       </div>
                     </div>
 
-                    {/* Study Level */}
                      <div className="sm:col-span-2">
                        <label className={labelClass} style={poppins}>Current Study Level</label>
                        <select 
                          value={profileForm.studyLevel}
                          onChange={e => setProfileForm(p => ({ ...p, studyLevel: e.target.value }))}
-                         className={inputClass} style={poppins}
+                         className={`${inputClass} appearance-none`} style={poppins}
                        >
                          <option value="">Select your education level...</option>
                          {STUDY_LEVEL_OPTIONS.map(opt => (
@@ -326,7 +301,7 @@ export default function ProfilePage() {
                   </div>
 
                   {profileMsg.text && (
-                    <div className={`px-4 py-3 rounded-xl text-sm flex items-center gap-2 ${profileMsg.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`} style={poppins}>
+                    <div className={`px-4 py-3 rounded-xl text-sm flex items-center gap-2 font-bold border-2 border-neo-black ${profileMsg.type === 'success' ? 'bg-neo-green' : 'bg-neo-coral'}`} style={poppins}>
                       {profileMsg.type === 'success' ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
                       {profileMsg.text}
                     </div>
@@ -336,11 +311,11 @@ export default function ProfilePage() {
                     <button 
                       type="submit" 
                       disabled={savingProfile}
-                      className="px-6 py-3 rounded-xl bg-purple-600 text-white font-semibold hover:bg-purple-700 hover:shadow-lg disabled:opacity-60 flex items-center justify-center gap-2 transition-all"
+                      className="neo-btn neo-btn-primary px-6 py-3 flex items-center justify-center gap-2 disabled:opacity-60"
                       style={poppins}
                     >
                       {savingProfile ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                      Save Changes
+                      SAVE CHANGES
                     </button>
                   </div>
                 </form>
@@ -349,33 +324,33 @@ export default function ProfilePage() {
 
             {/* 2. SECURITY TAB */}
             {activeTab === 'security' && (
-              <div className="animate-fade-in space-y-8">
+              <div className="animate-neo-slide-in space-y-8">
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-1" style={outfit}>Active Sessions</h3>
-                  <p className="text-sm text-gray-500 mb-5" style={poppins}>
-                    These are the devices that have logged into your account. Revoke any sessions that you do not recognize.
+                  <h3 className="text-lg font-extrabold text-neo-black mb-1" style={outfit}>Active Sessions</h3>
+                  <p className="text-sm text-neo-black/60 mb-5 font-semibold" style={poppins}>
+                    These are the devices that have logged into your account.
                   </p>
 
                   {sessions.length === 0 ? (
-                    <div className="p-8 text-center bg-gray-50 rounded-2xl border border-gray-100">
-                      <p className="text-gray-500 text-sm" style={poppins}>No active sessions found.</p>
+                    <div className="neo-card-static p-8 text-center">
+                      <p className="text-neo-black/50 text-sm font-bold" style={poppins}>No active sessions found.</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
                       {sessions.map(s => (
-                        <div key={s.id} className="flex items-center justify-between p-4 rounded-xl border border-gray-200 hover:border-purple-200 transition-colors bg-white">
+                        <div key={s.id} className="flex items-center justify-between p-4 rounded-xl border-3 border-neo-black hover:bg-neo-cream transition-colors bg-white" style={{boxShadow:'3px 3px 0 #1a1a2e'}}>
                           <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center border border-gray-100">
-                              <Shield className="w-5 h-5 text-gray-400" />
+                            <div className="w-10 h-10 rounded-lg bg-neo-lavender flex items-center justify-center border-2 border-neo-black">
+                              <Shield className="w-5 h-5 text-neo-black" />
                             </div>
                             <div>
                               <div className="flex items-center gap-2">
-                                <p className="text-sm font-semibold text-gray-900" style={poppins}>{s.device || 'Unknown Device'}</p>
+                                <p className="text-sm font-extrabold text-neo-black" style={poppins}>{s.device || 'Unknown Device'}</p>
                                 {s.isCurrent && (
-                                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700 uppercase" style={outfit}>This Device</span>
+                                  <span className="neo-badge bg-neo-green text-[10px]" style={outfit}>This Device</span>
                                 )}
                               </div>
-                              <p className="text-xs text-gray-500" style={poppins}>
+                              <p className="text-xs text-neo-black/50 font-semibold" style={poppins}>
                                 IP: {s.ip} • Last active: {new Date(s.lastActive).toLocaleDateString()} {new Date(s.lastActive).toLocaleTimeString()}
                               </p>
                             </div>
@@ -384,8 +359,8 @@ export default function ProfilePage() {
                             <button
                               onClick={() => handleRevokeSession(s.id)}
                               disabled={revokingSession === s.id}
-                              className="px-3 py-1.5 rounded-lg border border-red-200 text-red-600 text-sm hover:bg-red-50 transition-colors flex items-center gap-1.5 disabled:opacity-50"
-                              style={{ ...poppins, fontWeight: 500 }}
+                              className="neo-btn bg-neo-coral px-3 py-1.5 text-sm flex items-center gap-1.5 disabled:opacity-50"
+                              style={{ ...poppins, fontWeight: 700 }}
                             >
                               {revokingSession === s.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <LogOut className="w-3.5 h-3.5" />}
                               Revoke
@@ -401,13 +376,13 @@ export default function ProfilePage() {
 
             {/* 3. PAYMENT TAB */}
             {activeTab === 'payment' && (
-              <div className="animate-fade-in">
-                <div className="bg-purple-50 border border-purple-100 p-5 rounded-2xl mb-8 flex items-start gap-3">
-                  <AlertCircle className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+              <div className="animate-neo-slide-in">
+                <div className="bg-neo-lavender border-3 border-neo-black p-5 rounded-2xl mb-8 flex items-start gap-3" style={{boxShadow:'3px 3px 0 #1a1a2e'}}>
+                  <AlertCircle className="w-5 h-5 text-neo-black flex-shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="text-sm font-bold text-purple-900 mb-1" style={outfit}>Why do we need this?</h4>
-                    <p className="text-xs text-purple-700 leading-relaxed" style={poppins}>
-                      Your UPI ID is required so we can transfer your wallet balance (earned via referrals) directly to your bank account when you request a withdrawal. Make sure it is accurate.
+                    <h4 className="text-sm font-extrabold text-neo-black mb-1" style={outfit}>Why do we need this?</h4>
+                    <p className="text-xs text-neo-black/70 leading-relaxed font-semibold" style={poppins}>
+                      Your UPI ID is required so we can transfer your wallet balance directly to your bank account when you request a withdrawal.
                     </p>
                   </div>
                 </div>
@@ -416,20 +391,20 @@ export default function ProfilePage() {
                   <div>
                     <label className={labelClass} style={poppins}>UPI Virtual Payment Address (VPA)</label>
                     <div className="relative mb-2">
-                      <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neo-black/40" />
                       <input 
                         type="text" 
                         placeholder="e.g. yourname@okicici, mobile@paytm"
                         value={upiForm.upiId} 
                         onChange={e => setUpiForm({ upiId: e.target.value })}
-                        className={`pl-9 ${inputClass}`} style={poppins} 
+                        className={`${inputClass} pl-9`} style={poppins} 
                         required 
                       />
                     </div>
                   </div>
 
                   {upiMsg.text && (
-                    <div className={`px-4 py-3 rounded-xl text-sm flex items-center gap-2 ${upiMsg.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`} style={poppins}>
+                    <div className={`px-4 py-3 rounded-xl text-sm flex items-center gap-2 font-bold border-2 border-neo-black ${upiMsg.type === 'success' ? 'bg-neo-green' : 'bg-neo-coral'}`} style={poppins}>
                       {upiMsg.type === 'success' ? <CheckCircle2 className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
                       {upiMsg.text}
                     </div>
@@ -439,11 +414,11 @@ export default function ProfilePage() {
                     <button 
                       type="submit" 
                       disabled={savingUpi}
-                      className="px-6 py-3 rounded-xl bg-purple-600 text-white font-semibold hover:bg-purple-700 hover:shadow-lg disabled:opacity-60 flex items-center gap-2 transition-all"
+                      className="neo-btn neo-btn-primary px-6 py-3 flex items-center gap-2 disabled:opacity-60"
                       style={poppins}
                     >
                       {savingUpi ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                      Save UPI Details
+                      SAVE UPI DETAILS
                     </button>
                   </div>
                 </form>

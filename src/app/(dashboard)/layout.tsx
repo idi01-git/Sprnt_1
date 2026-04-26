@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import Image from 'next/image';
+import { usePathname, useRouter } from 'next/navigation';
 import { SessionProvider, useSession } from '@/contexts/SessionContext';
 import {
   BookOpen,
@@ -57,10 +58,10 @@ const STUDY_LEVEL_OPTIONS = [
   { value: 'GRADUATED', label: 'Graduated' },
 ];
 
-const inputClass = 'w-full px-4 py-3 pr-10 border border-gray-300 rounded-xl focus:outline-none focus:border-purple-600 focus:ring-2 focus:ring-purple-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder:text-gray-400';
-const inputStyle: React.CSSProperties = { fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '14px', color: '#1f2937' };
-const labelStyle: React.CSSProperties = { fontFamily: "'Poppins', sans-serif", fontWeight: 600, color: '#374151' };
-const btnStyle: React.CSSProperties = { fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: '15px' };
+const inputClass = 'neo-input pr-10';
+const inputStyle: React.CSSProperties = { fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '14px', color: '#1a1a2e' };
+const labelStyle: React.CSSProperties = { fontFamily: "'Poppins', sans-serif", fontWeight: 700, color: '#1a1a2e' };
+const btnStyle: React.CSSProperties = { fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: '15px', letterSpacing: '0.03em' };
 
 type View = 'login' | 'signup' | 'forgot';
 
@@ -107,11 +108,18 @@ function DashboardNavbar({ onShowAuth }: { onShowAuth: (view: View) => void }) {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl shadow-lg shadow-purple-500/10">
-      <div className="max-w-7xl mx-auto px-6 py-4">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-neo-yellow border-b-[3px] border-neo-black" style={{boxShadow:'0 3px 0 #1a1a2e'}}>
+      <div className="max-w-7xl mx-auto px-6 py-3">
         <div className="flex items-center justify-between">
           <Link href="/dashboard/home" className="flex items-center gap-2 transition-transform duration-200 hover:scale-105">
-            <img src="/images/logo.png" alt="Logo" className="h-10 w-auto" />
+            <Image
+              src="/images/logo1.png"
+              alt="Sprintern logo"
+              width={460}
+              height={300}
+              className="h-14 w-52 object-cover -mt-3"
+              priority
+            />
           </Link>
 
           <div className="hidden md:flex items-center gap-2">
@@ -119,8 +127,8 @@ function DashboardNavbar({ onShowAuth }: { onShowAuth: (view: View) => void }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-all"
-                style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '14px' }}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-neo-black font-bold hover:bg-neo-peach border-2 border-transparent hover:border-neo-black transition-all"
+                style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: '14px' }}
               >
                 <item.icon className="w-4 h-4" />
                 {item.label}
@@ -133,21 +141,21 @@ function DashboardNavbar({ onShowAuth }: { onShowAuth: (view: View) => void }) {
               <div className="relative" ref={userMenuRef}>
                 <button
                   onClick={() => setUserMenuOpen((o) => !o)}
-                  className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-purple-50 transition-all duration-200 group"
+                  className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-neo-peach border-2 border-transparent hover:border-neo-black transition-all duration-200 group"
                 >
-                  <div className="w-8 h-8 rounded-full bg-linear-to-br from-purple-600 to-blue-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-neo-pink border-2 border-neo-black flex items-center justify-center text-neo-black text-sm font-extrabold shrink-0">
                     {user.name.charAt(0).toUpperCase()}
                   </div>
-                  <span className="hidden sm:block text-gray-700 group-hover:text-purple-600 transition-colors text-sm max-w-[120px] truncate">
+                  <span className="hidden sm:block text-neo-black font-bold transition-colors text-sm max-w-[120px] truncate">
                     {user.name}
                   </span>
                   <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {userMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-1 z-50 animate-scale-up origin-top-right">
-                    <div className="px-4 py-3 border-b border-gray-100">
-                      <p className="text-sm font-semibold text-gray-900 truncate" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl border-3 border-neo-black py-1 z-50 animate-neo-slide-in origin-top-right" style={{boxShadow:'5px 5px 0 #1a1a2e'}}>
+                    <div className="px-4 py-3 border-b-2 border-neo-black">
+                      <p className="text-sm font-bold text-neo-black truncate" style={{ fontFamily: "'Poppins', sans-serif" }}>
                         {user.name}
                       </p>
                       <p className="text-xs text-gray-500 truncate" style={{ fontFamily: "'Poppins', sans-serif" }}>
@@ -185,7 +193,7 @@ function DashboardNavbar({ onShowAuth }: { onShowAuth: (view: View) => void }) {
                     <Link
                       href="/dashboard/certificates"
                       onClick={() => setUserMenuOpen(false)}
-                      className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors"
+                      className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-neo-black font-semibold hover:bg-neo-lavender transition-colors"
                       style={{ fontFamily: "'Poppins', sans-serif" }}
                     >
                       <Award className="w-4 h-4" />
@@ -194,7 +202,7 @@ function DashboardNavbar({ onShowAuth }: { onShowAuth: (view: View) => void }) {
                     <Link
                       href="/dashboard/submit"
                       onClick={() => setUserMenuOpen(false)}
-                      className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors"
+                      className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-neo-black font-semibold hover:bg-neo-mint transition-colors"
                       style={{ fontFamily: "'Poppins', sans-serif" }}
                     >
                       <FileCheck className="w-4 h-4" />
@@ -203,19 +211,19 @@ function DashboardNavbar({ onShowAuth }: { onShowAuth: (view: View) => void }) {
                     <Link
                       href="/dashboard/profile"
                       onClick={() => setUserMenuOpen(false)}
-                      className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors"
+                      className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-neo-black font-semibold hover:bg-neo-sky transition-colors"
                       style={{ fontFamily: "'Poppins', sans-serif" }}
                     >
                       <User className="w-4 h-4" /> Profile & Settings
                     </Link>
-                    <div className="border-t border-gray-100 mt-1" />
+                    <div className="border-t-2 border-neo-black mt-1" />
                     <button
                       onClick={async () => {
                         setUserMenuOpen(false);
                         await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }).catch(() => {});
                         window.location.href = '/login';
                       }}
-                      className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                      className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-neo-coral font-bold hover:bg-neo-coral/20 transition-colors"
                     >
                       <LogOut className="w-4 h-4" />
                       Logout
@@ -226,7 +234,7 @@ function DashboardNavbar({ onShowAuth }: { onShowAuth: (view: View) => void }) {
             ) : (
               <button
                 onClick={() => onShowAuth('login')}
-                className="px-5 py-2.5 rounded-xl bg-linear-to-r from-purple-600 to-blue-600 text-white hover:shadow-lg transition-all hover:scale-105"
+                className="neo-btn neo-btn-primary px-5 py-2.5"
                 style={{ ...btnStyle, fontSize: '14px' }}
               >
                 LOGIN
@@ -454,8 +462,8 @@ function AuthModal({ show, onClose, view, setView, onLogin }: { show: boolean; o
   // Profile Completion Form (Google Signup/Login - missing profile)
   if (showProfileForm && googleUser) {
     return (
-      <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden animate-scale-up max-h-[92vh] overflow-y-auto">
+      <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/50">
+        <div className="bg-white rounded-2xl border-3 border-neo-black max-w-md w-full mx-4 overflow-hidden animate-neo-slide-in max-h-[92vh] overflow-y-auto" style={{boxShadow:'8px 8px 0 #1a1a2e'}}>
           <div className="flex justify-end p-6 pb-0">
             <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-all">
               <X className="w-6 h-6" />
@@ -523,7 +531,7 @@ function AuthModal({ show, onClose, view, setView, onLogin }: { show: boolean; o
 
               {error && <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3"><p className="text-red-600 text-sm" style={inputStyle}>{error}</p></div>}
 
-              <button onClick={handleGoogleProfileSubmit} disabled={isLoading} className="w-full bg-linear-to-r from-purple-600 to-blue-600 text-white font-semibold py-3 rounded-xl hover:shadow-lg transition-all hover:-translate-y-0.5 active:scale-95 disabled:opacity-60 flex items-center justify-center gap-2" style={btnStyle}>
+              <button onClick={handleGoogleProfileSubmit} disabled={isLoading} className="w-full neo-btn neo-btn-blue text-neo-black py-3 flex items-center justify-center gap-2 disabled:opacity-60" style={btnStyle}>
                 {isLoading ? <><Loader2 className="w-5 h-5 animate-spin" /> COMPLETING…</> : <><ArrowRight className="w-5 h-5" /> COMPLETE SIGNUP</>}
               </button>
 
@@ -538,8 +546,8 @@ function AuthModal({ show, onClose, view, setView, onLogin }: { show: boolean; o
   }
 
   return (
-    <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden animate-scale-up max-h-[92vh] overflow-y-auto">
+    <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/50">
+      <div className="bg-white rounded-2xl border-3 border-neo-black max-w-md w-full mx-4 overflow-hidden animate-neo-slide-in max-h-[92vh] overflow-y-auto" style={{boxShadow:'8px 8px 0 #1a1a2e'}}>
         <div className="flex justify-end p-6 pb-0">
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-all">
             <X className="w-6 h-6" />
@@ -611,7 +619,7 @@ function AuthModal({ show, onClose, view, setView, onLogin }: { show: boolean; o
               {error && <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3"><p className="text-red-600 text-sm" style={inputStyle}>{error}</p></div>}
               {successMessage && <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3"><p className="text-green-700 text-sm font-semibold" style={inputStyle}>{successMessage}</p></div>}
 
-              <button onClick={handleLogin} disabled={isLoading} className="w-full bg-linear-to-r from-purple-600 to-blue-600 text-white font-semibold py-3 rounded-xl hover:shadow-lg transition-all hover:-translate-y-0.5 active:scale-95 disabled:opacity-60" style={btnStyle}>
+              <button onClick={handleLogin} disabled={isLoading} className="w-full neo-btn neo-btn-primary text-neo-black py-3 disabled:opacity-60" style={btnStyle}>
                 {isLoading ? 'LOGGING IN...' : 'LOGIN'}
               </button>
 
@@ -712,7 +720,7 @@ function AuthModal({ show, onClose, view, setView, onLogin }: { show: boolean; o
               {error && <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3"><p className="text-red-600 text-sm" style={inputStyle}>{error}</p></div>}
               {successMessage && <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3"><p className="text-green-700 text-sm font-semibold" style={inputStyle}>{successMessage}</p></div>}
 
-              <button onClick={handleSignUp} disabled={isLoading} className="w-full bg-linear-to-r from-purple-600 to-blue-600 text-white font-semibold py-3 rounded-xl hover:shadow-lg transition-all hover:-translate-y-0.5 active:scale-95 disabled:opacity-60" style={btnStyle}>
+              <button onClick={handleSignUp} disabled={isLoading} className="w-full neo-btn neo-btn-pink text-neo-black py-3 disabled:opacity-60" style={btnStyle}>
                 {isLoading ? 'CREATING...' : 'CREATE ACCOUNT'}
               </button>
 
@@ -778,9 +786,9 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
   // Show a lean full-page skeleton while loading (only on first load)
   if (status === 'loading') {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-neo-cream">
         {/* Skeleton navbar */}
-        <div className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl shadow-lg shadow-purple-500/10">
+        <div className="fixed top-0 left-0 right-0 z-50 bg-neo-yellow border-b-[3px] border-neo-black" style={{boxShadow:'0 3px 0 #1a1a2e'}}>
           <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
             <div className="h-10 w-32 bg-gray-200 animate-pulse rounded-lg" />
             <div className="hidden md:flex gap-2">
@@ -807,19 +815,25 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // Unauthenticated — redirect to landing page
+  const router = useRouter();
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      window.location.href = '/login';
+    }
+  }, [status, router]);
+
+  // Unauthenticated — render nothing while redirecting
   if (status === 'unauthenticated') {
-    if (typeof window !== 'undefined') window.location.href = '/login';
     return null;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-neo-cream">
       <DashboardNavbar
         onShowAuth={(v) => { setAuthView(v); setShowAuthModal(true); }}
       />
 
-      <main className="pt-24 pb-16">
+      <main className="pt-[70px] pb-16">
         {children}
       </main>
 

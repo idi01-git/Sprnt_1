@@ -4,8 +4,6 @@ import { useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Sparkles, TrendingUp, Award, Users, ArrowRight } from 'lucide-react';
-import { BackgroundEffect } from './BackgroundEffect';
-import { FloatingParticles } from './FloatingParticles';
 
 const heroMain = '/images/hero (1).svg';
 
@@ -13,10 +11,15 @@ const HeroSection = () => {
   const imgRef = useRef<HTMLDivElement | null>(null);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-linear-to-br from-purple-50 via-white to-blue-50 pt-24 pb-20">
-      {/* Animated Background Elements */}
-      <BackgroundEffect variant="gradient" />
-      <FloatingParticles count={15} color="#a855f7" />
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24 pb-20" style={{ background: '#FFF8E7' }}>
+      {/* Neo Brutalism Decorative Elements */}
+      <div className="absolute top-20 left-10 w-32 h-32 rounded-full opacity-40 animate-float" style={{ background: '#FF6B9D' }} />
+      <div className="absolute bottom-20 right-16 w-24 h-24 rounded-lg rotate-12 opacity-30 animate-float animation-delay-500" style={{ background: '#4ECDC4' }} />
+      <div className="absolute top-1/3 right-1/4 w-16 h-16 rotate-45 opacity-20" style={{ background: '#FFE156', border: '3px solid #1a1a2e' }} />
+      <div className="absolute bottom-1/3 left-1/4 w-12 h-12 rounded-full opacity-25" style={{ background: '#B084FF' }} />
+      
+      {/* Dot pattern */}
+      <div className="absolute inset-0 neo-pattern opacity-30 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -24,22 +27,18 @@ const HeroSection = () => {
           <div className="animate-fade-in-up">
             {/* Badge */}
             <div
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 animate-fade-in animation-delay-300 relative group"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl mb-6 animate-fade-in animation-delay-300"
+              style={{ background: '#FFE156', border: '3px solid #1a1a2e', boxShadow: '3px 3px 0 #1a1a2e' }}
             >
-              {/* Enhanced Glassmorphic Badge */}
-              <div className="absolute inset-0 bg-linear-to-r from-purple-500/10 via-blue-500/10 to-purple-500/10 backdrop-blur-xl rounded-full border border-purple-300/50"
-                style={{ boxShadow: '0 8px 32px rgba(139, 92, 246, 0.15), inset 0 0 20px rgba(255, 255, 255, 0.1)' }}
-              />
-              <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                style={{ boxShadow: '0 0 30px rgba(139, 92, 246, 0.3)' }}
-              />
-              <Sparkles className="w-4 h-4 text-purple-600 relative z-10" />
-              <span 
-                className="text-purple-700 relative z-10"
-                style={{ 
+              <Sparkles className="w-4 h-4" style={{ color: '#1a1a2e' }} />
+              <span
+                style={{
                   fontFamily: "'Poppins', sans-serif",
-                  fontWeight: 600,
-                  fontSize: '14px'
+                  fontWeight: 700,
+                  fontSize: '14px',
+                  color: '#1a1a2e',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
                 }}
               >
                 Transform Your Career in 14 Days
@@ -47,104 +46,90 @@ const HeroSection = () => {
             </div>
 
             <h1
-              className="mb-6 bg-linear-to-r from-purple-900 via-blue-900 to-purple-900 bg-clip-text text-transparent animate-fade-in animation-delay-400"
-              style={{ 
+              className="mb-6 animate-fade-in animation-delay-400"
+              style={{
                 fontFamily: "'Outfit', sans-serif",
                 fontWeight: 800,
                 fontSize: '56px',
-                lineHeight: '1.1'
+                lineHeight: '1.1',
+                color: '#1a1a2e'
               }}
             >
               Get Industrial Experience in{' '}
               <span className="relative inline-block">
-                14 Days
-                <div
-                  className="absolute -bottom-2 left-0 right-0 h-3 bg-linear-to-r from-purple-400 to-blue-400 opacity-30 rounded animate-expand-width animation-delay-1000"
-                />
+                <span style={{ background: '#FF6B9D', padding: '0 8px', borderRadius: '8px', border: '3px solid #1a1a2e' }}>
+                  14 Days
+                </span>
               </span>
             </h1>
 
             <p
-              className="text-gray-600 mb-8 animate-fade-in animation-delay-500"
-              style={{ 
+              className="mb-8 animate-fade-in animation-delay-500"
+              style={{
                 fontFamily: "'Poppins', sans-serif",
-                fontWeight: 400,
+                fontWeight: 500,
                 fontSize: '18px',
-                lineHeight: '1.7'
+                lineHeight: '1.7',
+                color: '#1a1a2e'
               }}
             >
               Tool-specific virtual internships for Core Engineers.{' '}
-              <span className="font-semibold text-purple-700"> Verified by Faculty.</span>
-              <span className="font-semibold text-blue-700"> Accepted by Industry.</span>
+              <span className="font-bold" style={{ background: '#B084FF', padding: '1px 6px', borderRadius: '4px' }}>Verified by Faculty.</span>{' '}
+              <span className="font-bold" style={{ background: '#4ECDC4', padding: '1px 6px', borderRadius: '4px' }}>Accepted by Industry.</span>
             </p>
 
-            <div
-              className="flex flex-wrap gap-4 mb-10 animate-fade-in animation-delay-600"
-            >
+            <div className="flex flex-wrap gap-4 mb-10 animate-fade-in animation-delay-600">
               <button
                 onClick={() => document.getElementById('courses')?.scrollIntoView({ behavior: 'smooth' })}
-                className="relative px-8 py-4 rounded-xl overflow-hidden group shadow-lg shadow-purple-500/30 transition-all duration-200 hover:scale-105 hover:-translate-y-0.5 active:scale-95"
+                className="neo-btn neo-btn-primary px-8 py-4"
                 style={{
                   fontFamily: "'Poppins', sans-serif",
-                  fontWeight: 600,
+                  fontWeight: 700,
                   fontSize: '16px'
                 }}
               >
-                <div className="absolute inset-0 bg-linear-to-r from-purple-600 to-blue-600" />
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-linear-to-r from-purple-500 to-blue-500" />
-                <span className="relative text-white z-10 flex items-center gap-2">
-                  Explore Internships
+                <span className="flex items-center gap-2">
+                  EXPLORE INTERNSHIPS
                   <TrendingUp className="w-5 h-5" />
                 </span>
               </button>
 
-
               <Link
                 href="/courses/full-stack-web-development/day-1"
-                className="px-8 py-4 rounded-xl border-2 border-purple-200 bg-white hover:bg-purple-50 transition-all shadow-sm flex items-center gap-2 hover:scale-105 hover:-translate-y-0.5 active:scale-95"
-                style={{ 
+                className="neo-btn bg-white px-8 py-4 flex items-center gap-2"
+                style={{
                   fontFamily: "'Poppins', sans-serif",
-                  fontWeight: 600,
+                  fontWeight: 700,
                   fontSize: '16px',
-                  color: '#7C3AED'
+                  color: '#1a1a2e'
                 }}
               >
-                Try Free
+                TRY FREE
                 <ArrowRight className="w-4 h-4 ml-1" />
               </Link>
             </div>
 
             {/* Trust Indicators */}
-            <div
-              className="grid grid-cols-3 gap-6 animate-fade-in animation-delay-800"
-            >
+            <div className="grid grid-cols-3 gap-4 animate-fade-in animation-delay-800">
               {[
-                { icon: Users, value: '10K+', label: 'Students' },
-                { icon: Award, value: '98%', label: 'Success Rate' },
-                { icon: Sparkles, value: '4.9/5', label: 'Rating' }
+                { icon: Users, value: '10K+', label: 'Students', bg: '#FF6B9D' },
+                { icon: Award, value: '98%', label: 'Success Rate', bg: '#4ECDC4' },
+                { icon: Sparkles, value: '4.9/5', label: 'Rating', bg: '#FFE156' }
               ].map((stat, index) => (
-                <div key={index} className="text-center">
+                <div
+                  key={index}
+                  className="text-center p-4 rounded-xl"
+                  style={{ background: '#fff', border: '3px solid #1a1a2e', boxShadow: '3px 3px 0 #1a1a2e' }}
+                >
                   <div className="flex items-center justify-center mb-2">
-                    <stat.icon className="w-5 h-5 text-purple-600" />
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: stat.bg, border: '2px solid #1a1a2e' }}>
+                      <stat.icon className="w-4 h-4" style={{ color: '#1a1a2e' }} />
+                    </div>
                   </div>
-                  <div 
-                    className="text-purple-900 mb-1"
-                    style={{ 
-                      fontFamily: "'Outfit', sans-serif",
-                      fontWeight: 700,
-                      fontSize: '20px'
-                    }}
-                  >
+                  <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: '20px', color: '#1a1a2e' }}>
                     {stat.value}
                   </div>
-                  <div 
-                    className="text-gray-600"
-                    style={{ 
-                      fontFamily: "'Poppins', sans-serif",
-                      fontWeight: 400,
-                      fontSize: '13px'
-                    }}
-                  >
+                  <div style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: '13px', color: '#1a1a2e', opacity: 0.6 }}>
                     {stat.label}
                   </div>
                 </div>
@@ -152,60 +137,31 @@ const HeroSection = () => {
             </div>
           </div>
 
-          {/* Right Content - 3D Card Grid */}
+          {/* Right Content - Image */}
           <div className="relative animate-fade-in-right animation-delay-400">
             <div className="flex justify-center">
-              {[
-                { img: heroMain, delay: 500 }
-              ].map((item, index) => (
-                <div
-                  key={index}
-                  className="relative group animate-fade-in-up w-full max-w-3xl"
-                  style={{ 
-                    perspective: '1200px',
-                    animationDelay: `${item.delay}ms`
-                  }}
-                  onMouseMove={(e) => {
-                    const el = imgRef.current;
-                    if (!el) return;
-                    const rect = el.getBoundingClientRect();
-                    const x = (e.clientX - rect.left) / rect.width - 0.5;
-                    const y = (e.clientY - rect.top) / rect.height - 0.5;
-                    const rotateY = x * 14;
-                    const rotateX = -y * 10;
-                    el.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(0)`;
-                  }}
-                  onMouseLeave={() => {
-                    const el = imgRef.current;
-                    if (!el) return;
-                    el.style.transform = 'rotateX(0deg) rotateY(0deg) translateZ(0)';
-                  }}
-                >
-                  <div
-                    ref={imgRef}
-                    className="relative rounded-2xl overflow-hidden shadow-2xl shadow-purple-500/20 transition-transform duration-500"
-                    style={{ transformStyle: 'preserve-3d' }}
-                  >
-                    <div className="absolute inset-0 bg-linear-to-br from-purple-600/20 to-blue-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
-                    <Image
-                      src={item.img}
-                      alt="Engineering Software"
-                      width={600}
-                      height={400}
-                      className="w-full h-auto object-cover"
-                      priority
-                    />
-                  </div>
-                </div>
-              ))}
+              <div
+                ref={imgRef}
+                className="relative rounded-2xl overflow-hidden"
+                style={{ border: '4px solid #1a1a2e', boxShadow: '8px 8px 0 #1a1a2e' }}
+              >
+                <Image
+                  src={heroMain}
+                  alt="Engineering Software"
+                  width={600}
+                  height={400}
+                  className="w-full h-auto object-cover"
+                  priority
+                />
+              </div>
             </div>
 
-            {/* Floating Elements */}
+            {/* Floating Element */}
             <div
-              className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-linear-to-br from-yellow-400 to-orange-500 shadow-lg shadow-orange-500/50 flex items-center justify-center animate-float"
-              style={{ boxShadow: '0 0 30px rgba(251, 191, 36, 0.6)' }}
+              className="absolute -top-6 -right-6 w-20 h-20 rounded-2xl flex items-center justify-center animate-float"
+              style={{ background: '#FFE156', border: '3px solid #1a1a2e', boxShadow: '4px 4px 0 #1a1a2e' }}
             >
-              <Sparkles className="w-10 h-10 text-white" />
+              <Sparkles className="w-10 h-10" style={{ color: '#1a1a2e' }} />
             </div>
           </div>
         </div>

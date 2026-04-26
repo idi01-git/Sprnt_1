@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { X, Mail, Lock, User, Phone, Calendar, ChevronDown, LogOut, Loader2, ArrowRight } from 'lucide-react';
 import { getFirebaseAuth, getGoogleProvider } from '@/lib/firebase-client';
 
@@ -38,21 +39,21 @@ const STUDY_LEVEL_OPTIONS = [
 ];
 
 const inputClass =
-  'w-full px-4 py-3 pr-10 border border-gray-300 rounded-xl focus:outline-none focus:border-purple-600 focus:ring-2 focus:ring-purple-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-900 placeholder:text-gray-400';
+  'neo-input w-full px-4 py-3 pr-10 text-gray-900 placeholder:text-gray-400';
 const inputStyle: React.CSSProperties = {
   fontFamily: "'Poppins', sans-serif",
-  fontWeight: 400,
+  fontWeight: 600,
   fontSize: '14px',
-  color: '#1f2937',
+  color: '#1a1a2e',
 };
 const labelStyle: React.CSSProperties = {
   fontFamily: "'Poppins', sans-serif",
-  fontWeight: 600,
-  color: '#374151',
+  fontWeight: 700,
+  color: '#1a1a2e',
 };
 const btnStyle: React.CSSProperties = {
   fontFamily: "'Poppins', sans-serif",
-  fontWeight: 600,
+  fontWeight: 700,
   fontSize: '15px',
 };
 
@@ -369,17 +370,20 @@ export function Navbar() {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/80 backdrop-blur-xl shadow-lg shadow-purple-500/10' : 'bg-transparent'
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[#FFF8E7] border-b-3 border-[#1a1a2e]' : 'bg-transparent'
           }`}
-        style={{ animation: 'slideDown 0.6s ease-out' }}
+        style={{ animation: 'slideDown 0.6s ease-out', boxShadow: scrolled ? '0 4px 0 #1a1a2e' : 'none' }}
       >
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2 transition-transform duration-200 hover:scale-105">
-              <img
-                src="/images/logo.png"
-                alt="Logo"
-                className="h-10 w-auto"
+           <Link href="/" className="flex items-center gap-2 transition-transform duration-200 hover:scale-105">
+              <Image
+                src="/images/logo1.png"
+                alt="Sprintern logo"
+                width={460}
+                height={300}
+                className="h-14 w-52 object-cover -mt-3"
+                priority
               />
             </Link>
 
@@ -392,20 +396,20 @@ export function Navbar() {
                 <Link
                   key={item.label}
                   href={item.href}
-                  className="text-gray-700 hover:text-purple-600 transition-all duration-200 relative group hover:-translate-y-0.5"
-                  style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '15px' }}
+                  className="text-gray-900 hover:text-[#FF6B9D] transition-all duration-200 relative group hover:-translate-y-0.5"
+                  style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: '15px' }}
                 >
                   {item.label}
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-linear-to-r from-purple-600 to-blue-600 group-hover:w-full transition-all duration-300" />
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#1a1a2e] group-hover:w-full transition-all duration-300" />
                 </Link>
               ))}
               <Link
                 href="/verify"
-                className="text-gray-700 hover:text-purple-600 transition-all duration-200 relative group hover:-translate-y-0.5"
-                style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '15px' }}
+                className="text-gray-900 hover:text-[#FF6B9D] transition-all duration-200 relative group hover:-translate-y-0.5"
+                style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: '15px' }}
               >
                 Verify Certificate
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-linear-to-r from-purple-600 to-blue-600 group-hover:w-full transition-all duration-300" />
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#1a1a2e] group-hover:w-full transition-all duration-300" />
               </Link>
             </div>
 
@@ -414,29 +418,29 @@ export function Navbar() {
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => setUserMenuOpen((o) => !o)}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-purple-50 transition-all duration-200 group"
-                    style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500 }}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all duration-200 group border-2 border-transparent hover:border-[#1a1a2e] hover:bg-[#FFE156]"
+                    style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700 }}
                   >
-                    <div className="w-8 h-8 rounded-full bg-linear-to-br from-purple-600 to-blue-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
+                    <div className="w-8 h-8 rounded-lg bg-[#FF6B9D] border-2 border-[#1a1a2e] flex items-center justify-center text-[#1a1a2e] text-sm font-extrabold shrink-0">
                       {authedUser.name.charAt(0).toUpperCase()}
                     </div>
-                    <span className="hidden sm:block text-gray-700 group-hover:text-purple-600 transition-colors text-sm max-w-[120px] truncate">
+                    <span className="hidden sm:block text-[#1a1a2e] transition-colors text-sm max-w-[120px] truncate">
                       {authedUser.name}
                     </span>
                     <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} />
                   </button>
 
                   {userMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-xl border border-gray-100 py-1 z-50 animate-scale-up origin-top-right">
-                      <div className="px-4 py-3 border-b border-gray-100">
-                        <p className="text-sm font-semibold text-gray-900 truncate" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                    <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl py-1 z-50 animate-scale-up origin-top-right border-3 border-[#1a1a2e]" style={{ boxShadow: '5px 5px 0 #1a1a2e' }}>
+                      <div className="px-4 py-3 border-b-2 border-[#1a1a2e]">
+                        <p className="text-sm font-extrabold text-[#1a1a2e] truncate" style={{ fontFamily: "'Poppins', sans-serif" }}>
                           {authedUser.name}
                         </p>
-                        <p className="text-xs text-gray-500 truncate" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                        <p className="text-xs font-bold text-gray-500 truncate" style={{ fontFamily: "'Poppins', sans-serif" }}>
                           {authedUser.email}
                         </p>
                         {!authedUser.emailVerified && (
-                          <span className="inline-block mt-1 text-xs text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
+                          <span className="inline-block mt-1 text-xs font-bold text-[#1a1a2e] bg-[#FFB347] border border-[#1a1a2e] px-2 py-0.5 rounded-md">
                             Email not verified
                           </span>
                         )}
@@ -444,24 +448,24 @@ export function Navbar() {
                       <Link
                         href="/dashboard"
                         onClick={() => setUserMenuOpen(false)}
-                        className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors"
-                        style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500 }}
+                        className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-[#1a1a2e] hover:bg-[#FFE156] transition-colors"
+                        style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700 }}
                       >
                         My Dashboard
                       </Link>
                       <Link
                         href="/dashboard/wallet"
                         onClick={() => setUserMenuOpen(false)}
-                        className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors"
-                        style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500 }}
+                        className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-[#1a1a2e] hover:bg-[#A8E6FF] transition-colors"
+                        style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700 }}
                       >
                         Wallet &amp; Referrals
                       </Link>
-                      <div className="border-t border-gray-100 my-1" />
+                      <div className="border-t-2 border-[#1a1a2e] my-1" />
                       <button
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                        style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500 }}
+                        className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-[#1a1a2e] hover:bg-[#FF6B9D] transition-colors"
+                        style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700 }}
                       >
                         <LogOut className="w-4 h-4" />
                         Logout
@@ -473,19 +477,16 @@ export function Navbar() {
                 <>
                   <button
                     onClick={() => openModal('login')}
-                    className="text-gray-700 hover:text-purple-600 transition-all duration-200 hover:scale-105"
-                    style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '15px' }}
+                    className="text-[#1a1a2e] hover:text-[#FF6B9D] transition-all duration-200 hover:scale-105"
+                    style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: '15px' }}
                   >
                     LOGIN
                   </button>
                   <button
                     onClick={() => openModal('signup')}
-                    className="relative px-6 py-3 rounded-xl overflow-hidden group transition-all duration-200 hover:scale-105 hover:-translate-y-0.5 active:scale-95"
-                    style={btnStyle}
+                    className="neo-btn neo-btn-primary px-6 py-3"
                   >
-                    <div className="absolute inset-0 bg-linear-to-r from-purple-600 via-blue-600 to-purple-600 bg-size-[200%_100%] animate-gradient" />
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-linear-to-r from-purple-500 via-blue-500 to-purple-500" />
-                    <span className="relative text-white z-10">Start Free Trial</span>
+                    START FREE TRIAL
                   </button>
 
                 </>
@@ -496,11 +497,11 @@ export function Navbar() {
       </nav>
 
       {showModal && (
-        <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden animate-scale-up max-h-[92vh] overflow-y-auto">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-[#FFF8E7] rounded-2xl border-3 border-[#1a1a2e] max-w-md w-full mx-4 overflow-hidden animate-scale-up max-h-[92vh] overflow-y-auto" style={{ boxShadow: '8px 8px 0 #1a1a2e' }}>
             <div className="flex justify-end p-6 pb-0">
-              <button onClick={closeModal} className="text-gray-400 hover:text-gray-600 transition-all">
-                <X className="w-6 h-6" />
+              <button onClick={closeModal} className="w-8 h-8 rounded-lg flex items-center justify-center transition-all bg-[#FF6B6B] border-2 border-[#1a1a2e] hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-none" style={{ boxShadow: '2px 2px 0 #1a1a2e' }}>
+                <X className="w-5 h-5 text-[#1a1a2e]" />
               </button>
             </div>
 
@@ -509,10 +510,10 @@ export function Navbar() {
               {view === 'login' && (
                 <div className="space-y-5">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-1" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800 }}>
+                    <h2 className="text-2xl font-extrabold text-[#1a1a2e] mb-1" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800 }}>
                       WELCOME BACK, ENGINEER.
                     </h2>
-                    <p className="text-gray-600" style={{ ...inputStyle, fontSize: '14px' }}>
+                    <p className="text-[#1a1a2e] font-semibold" style={{ ...inputStyle, fontSize: '14px', opacity: 0.8 }}>
                       Continue your sprint exactly where you left off.
                     </p>
                   </div>
@@ -521,8 +522,8 @@ export function Navbar() {
                     type="button"
                     onClick={handleGoogleSignIn}
                     disabled={isLoading}
-                    className="w-full flex items-center justify-center gap-2 bg-white border border-gray-200 shadow-sm text-gray-700 font-semibold py-3 rounded-xl hover:bg-gray-50 transition-all hover:-translate-y-0.5 active:scale-95 disabled:opacity-60"
-                    style={{ fontFamily: "'Poppins', sans-serif", fontSize: '15px' }}
+                    className="w-full flex items-center justify-center gap-2 bg-white border-3 border-[#1a1a2e] text-[#1a1a2e] font-bold py-3 rounded-xl hover:translate-y-0.5 active:scale-95 disabled:opacity-60"
+                    style={{ fontFamily: "'Poppins', sans-serif", fontSize: '15px', boxShadow: '4px 4px 0 #1a1a2e' }}
                   >
                     {isLoading ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
@@ -538,13 +539,13 @@ export function Navbar() {
                   </button>
 
                   <div className="flex items-center gap-4 -my-1">
-                    <div className="flex-1 border-t border-gray-200"></div>
-                    <span className="text-xs text-gray-400 font-medium tracking-wider" style={{ fontFamily: "'Poppins', sans-serif" }}>OR</span>
-                    <div className="flex-1 border-t border-gray-200"></div>
+                    <div className="flex-1 border-t-2 border-[#1a1a2e]"></div>
+                    <span className="text-xs text-[#1a1a2e] font-bold tracking-wider" style={{ fontFamily: "'Poppins', sans-serif" }}>OR</span>
+                    <div className="flex-1 border-t-2 border-[#1a1a2e]"></div>
                   </div>
 
                   <div className="space-y-1">
-                    <label className="block text-sm text-gray-700" style={labelStyle}>Enter Registered Email</label>
+                    <label className="block text-sm text-[#1a1a2e]" style={labelStyle}>Enter Registered Email</label>
                     <div className="relative">
                       <input
                         type="email"
@@ -555,13 +556,13 @@ export function Navbar() {
                         className={inputClass}
                         style={inputStyle}
                       />
-                      <Mail className="absolute right-3 top-3.5 w-5 h-5 text-gray-400 pointer-events-none" />
+                      <Mail className="absolute right-3 top-3.5 w-5 h-5 text-[#1a1a2e] opacity-50 pointer-events-none" />
                     </div>
                     <FieldError name="email" />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="block text-sm text-gray-700" style={labelStyle}>Password</label>
+                    <label className="block text-sm text-[#1a1a2e]" style={labelStyle}>Password</label>
                     <div className="relative">
                       <input
                         type="password"
@@ -573,7 +574,7 @@ export function Navbar() {
                         className={inputClass}
                         style={inputStyle}
                       />
-                      <Lock className="absolute right-3 top-3.5 w-5 h-5 text-gray-400 pointer-events-none" />
+                      <Lock className="absolute right-3 top-3.5 w-5 h-5 text-[#1a1a2e] opacity-50 pointer-events-none" />
                     </div>
                     <FieldError name="password" />
                   </div>
@@ -581,8 +582,8 @@ export function Navbar() {
                   <div className="text-right -mt-2">
                     <button
                       onClick={() => switchView('forgot')}
-                      className="text-purple-600 text-sm hover:text-purple-700 transition-all"
-                      style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500 }}
+                      className="text-[#FF6B9D] font-bold text-sm hover:underline transition-all"
+                      style={{ fontFamily: "'Poppins', sans-serif" }}
                     >
                       Forgot password?
                     </button>
@@ -593,16 +594,15 @@ export function Navbar() {
                   <button
                     onClick={handleLogin}
                     disabled={isLoading}
-                    className="w-full bg-linear-to-r from-purple-600 to-blue-600 text-white font-semibold py-3 rounded-xl hover:shadow-lg transition-all hover:-translate-y-0.5 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
-                    style={btnStyle}
+                    className="w-full neo-btn neo-btn-primary py-3 disabled:opacity-60"
                   >
                     {isLoading ? 'LOGGING IN...' : 'LOGIN'}
                   </button>
 
                   <div className="text-center">
-                    <p className="text-gray-600" style={{ ...inputStyle, fontSize: '14px' }}>
+                    <p className="text-[#1a1a2e] font-semibold" style={{ ...inputStyle, fontSize: '14px' }}>
                       First time here?{' '}
-                      <button onClick={() => switchView('signup')} className="text-purple-600 font-semibold hover:text-purple-700 transition-all" style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>
+                      <button onClick={() => switchView('signup')} className="text-[#4ECDC4] font-extrabold hover:underline transition-all" style={{ fontFamily: "'Poppins', sans-serif" }}>
                         START 14-DAY SPRINT →
                       </button>
                     </p>
@@ -613,10 +613,10 @@ export function Navbar() {
               {view === 'signup' && (
                 <div className="space-y-4">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-1" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800 }}>
+                    <h2 className="text-2xl font-extrabold text-[#1a1a2e] mb-1" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800 }}>
                       {googleUser?.idToken ? 'CONFIRM SIGNUP' : 'SETUP YOUR PROFILE'}
                     </h2>
-                    <p className="text-gray-600" style={{ ...inputStyle, fontSize: '14px' }}>
+                    <p className="text-[#1a1a2e] font-semibold" style={{ ...inputStyle, fontSize: '14px', opacity: 0.8 }}>
                       {googleUser?.idToken
                         ? 'Your Google account will be linked to complete signup.'
                         : 'Join 500+ core engineers mastering industry tools.'}
@@ -624,14 +624,13 @@ export function Navbar() {
                   </div>
 
                   {googleUser?.idToken ? (
-                    /* Google account info banner */
-                    <div className="p-3 bg-purple-50 border border-purple-100 rounded-lg flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                        <User className="w-5 h-5 text-purple-600" />
+                    <div className="p-3 bg-[#FFE156] border-2 border-[#1a1a2e] rounded-xl flex items-center gap-3" style={{ boxShadow: '3px 3px 0 #1a1a2e' }}>
+                      <div className="w-10 h-10 rounded-lg bg-white border-2 border-[#1a1a2e] flex items-center justify-center">
+                        <User className="w-5 h-5 text-[#1a1a2e]" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900" style={inputStyle}>{googleUser.name}</p>
-                        <p className="text-xs text-gray-500" style={inputStyle}>{googleUser.email}</p>
+                        <p className="text-sm font-bold text-[#1a1a2e]" style={inputStyle}>{googleUser.name}</p>
+                        <p className="text-xs font-semibold text-[#1a1a2e]" style={inputStyle}>{googleUser.email}</p>
                       </div>
                     </div>
                   ) : (
@@ -639,8 +638,8 @@ export function Navbar() {
                       type="button"
                       onClick={handleGoogleSignIn}
                       disabled={isLoading}
-                      className="w-full flex items-center justify-center gap-2 bg-white border border-gray-200 shadow-sm text-gray-700 font-semibold py-3 rounded-xl hover:bg-gray-50 transition-all hover:-translate-y-0.5 active:scale-95 disabled:opacity-60"
-                      style={{ fontFamily: "'Poppins', sans-serif", fontSize: '15px' }}
+                      className="w-full flex items-center justify-center gap-2 bg-white border-3 border-[#1a1a2e] text-[#1a1a2e] font-bold py-3 rounded-xl hover:translate-y-0.5 active:scale-95 disabled:opacity-60"
+                      style={{ fontFamily: "'Poppins', sans-serif", fontSize: '15px', boxShadow: '4px 4px 0 #1a1a2e' }}
                     >
                       {isLoading ? (
                         <Loader2 className="w-5 h-5 animate-spin" />
@@ -657,13 +656,13 @@ export function Navbar() {
                   )}
 
                   <div className="flex items-center gap-4 -my-1">
-                    <div className="flex-1 border-t border-gray-200"></div>
-                    <span className="text-xs text-gray-400 font-medium tracking-wider" style={{ fontFamily: "'Poppins', sans-serif" }}>OR EMAIL</span>
-                    <div className="flex-1 border-t border-gray-200"></div>
+                    <div className="flex-1 border-t-2 border-[#1a1a2e]"></div>
+                    <span className="text-xs text-[#1a1a2e] font-bold tracking-wider" style={{ fontFamily: "'Poppins', sans-serif" }}>OR EMAIL</span>
+                    <div className="flex-1 border-t-2 border-[#1a1a2e]"></div>
                   </div>
 
                   <div className="space-y-1">
-                    <label className="block text-sm text-gray-700" style={labelStyle}>Full Name</label>
+                    <label className="block text-sm" style={labelStyle}>Full Name</label>
                     <div className="relative">
                       <input
                         type="text"
@@ -674,13 +673,13 @@ export function Navbar() {
                         className={inputClass}
                         style={inputStyle}
                       />
-                      <User className="absolute right-3 top-3.5 w-5 h-5 text-gray-400 pointer-events-none" />
+                      <User className="absolute right-3 top-3.5 w-5 h-5 text-[#1a1a2e] opacity-50 pointer-events-none" />
                     </div>
                     <FieldError name="name" />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="block text-sm text-gray-700" style={labelStyle}>College Email Address</label>
+                    <label className="block text-sm" style={labelStyle}>College Email Address</label>
                     <div className="relative">
                       <input
                         type="email"
@@ -691,14 +690,14 @@ export function Navbar() {
                         className={inputClass}
                         style={inputStyle}
                       />
-                      <Mail className="absolute right-3 top-3.5 w-5 h-5 text-gray-400 pointer-events-none" />
+                      <Mail className="absolute right-3 top-3.5 w-5 h-5 text-[#1a1a2e] opacity-50 pointer-events-none" />
                     </div>
                     <FieldError name="email" />
                   </div>
 
                   {!googleUser?.idToken && (
                     <div className="space-y-1">
-                      <label className="block text-sm text-gray-700" style={labelStyle}>Password</label>
+                      <label className="block text-sm" style={labelStyle}>Password</label>
                       <div className="relative">
                         <input
                           type="password"
@@ -709,15 +708,15 @@ export function Navbar() {
                           className={inputClass}
                           style={inputStyle}
                         />
-                        <Lock className="absolute right-3 top-3.5 w-5 h-5 text-gray-400 pointer-events-none" />
+                        <Lock className="absolute right-3 top-3.5 w-5 h-5 text-[#1a1a2e] opacity-50 pointer-events-none" />
                       </div>
                       <FieldError name="password" />
                     </div>
                   )}
 
                   <div className="space-y-1">
-                    <label className="block text-sm text-gray-700" style={labelStyle}>
-                      Phone Number <span className="text-gray-400 font-normal">(Optional)</span>
+                    <label className="block text-sm" style={labelStyle}>
+                      Phone Number <span className="opacity-60 font-semibold">(Optional)</span>
                     </label>
                     <div className="relative">
                       <input
@@ -729,14 +728,14 @@ export function Navbar() {
                         className={inputClass}
                         style={inputStyle}
                       />
-                      <Phone className="absolute right-3 top-3.5 w-5 h-5 text-gray-400 pointer-events-none" />
+                      <Phone className="absolute right-3 top-3.5 w-5 h-5 text-[#1a1a2e] opacity-50 pointer-events-none" />
                     </div>
                     <FieldError name="phone" />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="block text-sm text-gray-700" style={labelStyle}>
-                      Date of Birth <span className="text-gray-400 font-normal">(Optional)</span>
+                    <label className="block text-sm" style={labelStyle}>
+                      Date of Birth <span className="opacity-60 font-semibold">(Optional)</span>
                     </label>
                     <div className="relative">
                       <input
@@ -748,14 +747,14 @@ export function Navbar() {
                         style={inputStyle}
                         max="2010-01-01"
                       />
-                      <Calendar className="absolute right-3 top-3.5 w-5 h-5 text-gray-400 pointer-events-none" />
+                      <Calendar className="absolute right-3 top-3.5 w-5 h-5 text-[#1a1a2e] opacity-50 pointer-events-none" />
                     </div>
                     <FieldError name="dob" />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="block text-sm text-gray-700" style={labelStyle}>
-                      Study Level <span className="text-gray-400 font-normal">(Optional)</span>
+                    <label className="block text-sm" style={labelStyle}>
+                      Study Level <span className="opacity-60 font-semibold">(Optional)</span>
                     </label>
                     <div className="relative">
                       <select
@@ -770,14 +769,14 @@ export function Navbar() {
                           <option key={opt.value} value={opt.value}>{opt.label}</option>
                         ))}
                       </select>
-                      <ChevronDown className="absolute right-3 top-3.5 w-5 h-5 text-gray-400 pointer-events-none" />
+                      <ChevronDown className="absolute right-3 top-3.5 w-5 h-5 text-[#1a1a2e] opacity-50 pointer-events-none" />
                     </div>
                     <FieldError name="studyLevel" />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="block text-sm text-gray-700" style={labelStyle}>
-                      Referral Code <span className="text-gray-400 font-normal">(Optional)</span>
+                    <label className="block text-sm" style={labelStyle}>
+                      Referral Code <span className="opacity-60 font-semibold">(Optional)</span>
                     </label>
                     <input
                       type="text"
@@ -788,7 +787,7 @@ export function Navbar() {
                       className={inputClass}
                       style={inputStyle}
                     />
-                    <p className="text-gray-400 text-xs" style={inputStyle}>
+                    <p className="text-[#1a1a2e] font-semibold opacity-70 text-xs" style={inputStyle}>
                       Have a code? Enter to get ₹50 cashback later.
                     </p>
                     <FieldError name="referralCode" />
@@ -799,16 +798,15 @@ export function Navbar() {
                   <button
                     onClick={handleSignUp}
                     disabled={isLoading}
-                    className="w-full bg-linear-to-r from-purple-600 to-blue-600 text-white font-semibold py-3 rounded-xl hover:shadow-lg transition-all hover:-translate-y-0.5 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
-                    style={btnStyle}
+                    className="w-full neo-btn neo-btn-primary py-3 disabled:opacity-60"
                   >
                     {isLoading ? 'CREATING ACCOUNT...' : 'CREATE ACCOUNT'}
                   </button>
 
                   <div className="text-center">
-                    <p className="text-gray-600" style={{ ...inputStyle, fontSize: '14px' }}>
+                    <p className="text-[#1a1a2e] font-semibold" style={{ ...inputStyle, fontSize: '14px' }}>
                       Already have an account?{' '}
-                      <button onClick={() => switchView('login')} className="text-purple-600 font-semibold hover:text-purple-700 transition-all" style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>
+                      <button onClick={() => switchView('login')} className="text-[#FF6B9D] font-extrabold hover:underline transition-all" style={{ fontFamily: "'Poppins', sans-serif" }}>
                         LOGIN HERE
                       </button>
                     </p>
@@ -819,16 +817,16 @@ export function Navbar() {
               {view === 'forgot' && (
                 <div className="space-y-5">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-1" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800 }}>
+                    <h2 className="text-2xl font-extrabold text-[#1a1a2e] mb-1" style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800 }}>
                       RESET PASSWORD
                     </h2>
-                    <p className="text-gray-600" style={{ ...inputStyle, fontSize: '14px' }}>
+                    <p className="text-[#1a1a2e] font-semibold" style={{ ...inputStyle, fontSize: '14px', opacity: 0.8 }}>
                       Enter your registered email and we&apos;ll send you a reset link.
                     </p>
                   </div>
 
                   <div className="space-y-1">
-                    <label className="block text-sm text-gray-700" style={labelStyle}>Registered Email</label>
+                    <label className="block text-sm" style={labelStyle}>Registered Email</label>
                     <div className="relative">
                       <input
                         type="email"
@@ -840,7 +838,7 @@ export function Navbar() {
                         className={inputClass}
                         style={inputStyle}
                       />
-                      <Mail className="absolute right-3 top-3.5 w-5 h-5 text-gray-400 pointer-events-none" />
+                      <Mail className="absolute right-3 top-3.5 w-5 h-5 text-[#1a1a2e] opacity-50 pointer-events-none" />
                     </div>
                     <FieldError name="email" />
                   </div>
@@ -850,14 +848,13 @@ export function Navbar() {
                   <button
                     onClick={handleForgotPassword}
                     disabled={isLoading || !!successMessage}
-                    className="w-full bg-linear-to-r from-purple-600 to-blue-600 text-white font-semibold py-3 rounded-xl hover:shadow-lg transition-all hover:-translate-y-0.5 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
-                    style={btnStyle}
+                    className="w-full neo-btn neo-btn-pink py-3 disabled:opacity-60"
                   >
                     {isLoading ? 'SENDING...' : 'SEND RESET LINK'}
                   </button>
 
                   <div className="text-center">
-                    <button onClick={() => switchView('login')} className="text-purple-600 font-semibold hover:text-purple-700 transition-all text-sm" style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>
+                    <button onClick={() => switchView('login')} className="text-[#1a1a2e] font-extrabold hover:underline transition-all text-sm" style={{ fontFamily: "'Poppins', sans-serif" }}>
                       ← Back to Login
                     </button>
                   </div>
