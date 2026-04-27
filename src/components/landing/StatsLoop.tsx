@@ -24,11 +24,11 @@ const StatsLoop = () => {
       {/* Fade edges */}
       <div
         className="absolute left-0 top-0 bottom-0 w-8 md:w-12 z-10 pointer-events-none"
-        style={{ background: 'linear-gradient(to right, #FFF8E7, transparent)' }}
+        style={{ background: 'linear-gradient(to right, #E0F7FF, transparent)' }}
       />
       <div
         className="absolute right-0 top-0 bottom-0 w-8 md:w-12 z-10 pointer-events-none"
-        style={{ background: 'linear-gradient(to left, #FFF8E7, transparent)' }}
+        style={{ background: 'linear-gradient(to left, #E0F7FF, transparent)' }}
       />
 
       {/* Scrolling container */}

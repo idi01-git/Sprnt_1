@@ -123,7 +123,7 @@ function IdentityModal({ onClose, onConfirm, loading }: { onClose: () => void; o
             {errors.collegeIdLink && <p className="text-xs mt-1" style={{ ...poppins, color: '#FF6B6B', fontWeight: 600 }}>{errors.collegeIdLink}</p>}
             <p className="text-xs mt-1" style={{ ...poppins, color: '#999' }}>Upload your college ID photo to Google Drive and paste the link here</p>
           </div>
-          <div className="rounded-xl p-4" style={{ background: '#FFE156', border: '2px solid #1a1a2e' }}>
+          <div className="rounded-xl p-4" style={{ background: '#A8E6FF', border: '2px solid #1a1a2e' }}>
             <p className="text-xs leading-relaxed" style={{ ...poppins, color: '#1a1a2e', fontWeight: 600 }}>
               Upload your college ID photo to Google Drive (make it "Anyone with the link can view"), then paste the link above.
             </p>
@@ -158,7 +158,7 @@ function DriveLinkInput({ label, hint, value, onChange, error }: { label: string
 
 export default function SubmitPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center pt-24"><div className="w-12 h-12 rounded-2xl flex items-center justify-center animate-neo-bounce" style={{ background: '#FFE156', border: '3px solid #1a1a2e', boxShadow: '3px 3px 0 #1a1a2e' }}><Loader2 className="w-6 h-6 animate-spin" style={{ color: '#1a1a2e' }} /></div></div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center pt-24"><div className="w-12 h-12 rounded-2xl flex items-center justify-center animate-neo-bounce" style={{ background: '#A8E6FF', border: '3px solid #1a1a2e', boxShadow: '3px 3px 0 #1a1a2e' }}><Loader2 className="w-6 h-6 animate-spin" style={{ color: '#1a1a2e' }} /></div></div>}>
       <SubmitPageContent />
     </Suspense>
   );
@@ -207,7 +207,7 @@ function SubmitPageContent() {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-16 px-4 sm:px-6" style={{ background: '#FFF8E7' }}>
+    <div className="min-h-screen pt-24 pb-16 px-4 sm:px-6" style={{ background: '#E0F7FF' }}>
       {showIdentityModal && <IdentityModal onClose={() => setShowIdentityModal(false)} onConfirm={handleFinalSubmit} loading={submitting} />}
       <div className="max-w-4xl mx-auto">
         <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm mb-6" style={{ ...poppins, fontWeight: 700, color: '#1a1a2e', opacity: 0.6 }}>
@@ -272,7 +272,7 @@ function SubmitPageContent() {
             </h2>
             {loadingSubs ? (
               <div className="flex items-center justify-center py-12">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: '#FFE156', border: '2px solid #1a1a2e' }}>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: '#A8E6FF', border: '2px solid #1a1a2e' }}>
                   <Loader2 className="w-5 h-5 animate-spin" style={{ color: '#1a1a2e' }} />
                 </div>
               </div>
@@ -299,7 +299,7 @@ function SubmitPageContent() {
                         {sub.resubmissionCount > 0 && <span>Resubmissions: {sub.resubmissionCount}/{sub.maxResubmissions}</span>}
                       </div>
                       {sub.adminNotes && (
-                        <div className="mt-3 p-3 rounded-lg text-xs" style={{ ...poppins, background: '#FFF8E7', border: '2px solid #1a1a2e' }}>
+                        <div className="mt-3 p-3 rounded-lg text-xs" style={{ ...poppins, background: '#E0F7FF', border: '2px solid #1a1a2e' }}>
                           <span style={{ fontWeight: 700, color: '#1a1a2e' }}>Admin feedback: </span>{sub.adminNotes}
                         </div>
                       )}

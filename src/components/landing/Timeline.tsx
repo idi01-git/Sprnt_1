@@ -41,7 +41,7 @@ export function Timeline() {
     {
       day: 'Day 9-11', phase: 'Project Work', title: 'Industrial Project',
       description: 'Design and build your capstone engineering project',
-      icon: Target, bg: '#FFF3D0', iconBg: '#FFE156',
+      icon: Target, bg: '#BEE3F8', iconBg: '#A8E6FF',
       activities: ['Project specification analysis', 'Design & planning phase', 'Implementation with tools', 'Mentor feedback & iterations']
     },
     {
@@ -59,7 +59,7 @@ export function Timeline() {
   ];
 
   return (
-    <section id="roadmap" className="relative py-24 overflow-hidden" style={{ background: '#FFF8E7' }}>
+    <section id="roadmap" className="relative py-24 overflow-hidden" style={{ background: '#E0F7FF' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
         {/* Header */}
         <div className="text-center mb-16 animate-fade-in">

@@ -7,7 +7,7 @@
 
 :root {
   --font-size: 16px;
-  --background: #FFF8E7;
+  --background: #E0F7FF;
   --foreground: #1a1a2e;
   --card: #ffffff;
   --card-foreground: #1a1a2e;
@@ -15,11 +15,10 @@
   --popover-foreground: #1a1a2e;
   --primary: #1a1a2e;
   --primary-foreground: #ffffff;
-  --secondary: #FFF8E7;
-  --secondary-foreground: #1a1a2e;
-  --muted: #FFF3D0;
+  --secondary: #E0F7FF;
+  --muted: #BEE3F8;
   --muted-foreground: #4a4a68;
-  --accent: #FFE156;
+  --accent: #A8E6FF;
   --accent-foreground: #1a1a2e;
   --destructive: #FF6B6B;
   --destructive-foreground: #1a1a2e;
@@ -32,7 +31,7 @@
   --ring: #1a1a2e;
 
   /* Neo Brutalism Palette */
-  --neo-yellow: #FFE156;
+  --neo-yellow: #A8E6FF;
   --neo-pink: #FF6B9D;
   --neo-blue: #4ECDC4;
   --neo-green: #95E77E;
@@ -43,7 +42,7 @@
   --neo-mint: #B8F0D8;
   --neo-peach: #FFD4B8;
   --neo-sky: #A8E6FF;
-  --neo-cream: #FFF8E7;
+  --neo-cream: #E0F7FF;
   --neo-black: #1a1a2e;
   --neo-white: #ffffff;
 
@@ -84,7 +83,7 @@
   --radius-xl: 0.875rem;
 
   /* Neo Brutalism Colors */
-  --color-neo-yellow: #FFE156;
+  --color-neo-yellow: #A8E6FF;
   --color-neo-pink: #FF6B9D;
   --color-neo-blue: #4ECDC4;
   --color-neo-green: #95E77E;
@@ -95,7 +94,7 @@
   --color-neo-mint: #B8F0D8;
   --color-neo-peach: #FFD4B8;
   --color-neo-sky: #A8E6FF;
-  --color-neo-cream: #FFF8E7;
+  --color-neo-cream: #E0F7FF;
   --color-neo-black: #1a1a2e;
 }
 

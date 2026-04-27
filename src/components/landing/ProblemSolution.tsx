@@ -38,7 +38,7 @@ const ProblemSolution = () => {
   ];
 
   return (
-    <section className="relative py-24 overflow-hidden" style={{ background: '#FFF8E7' }}>
+    <section className="relative py-24 overflow-hidden" style={{ background: '#E0F7FF' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
         {/* Header */}
         <div className="text-center mb-16 animate-fade-in">

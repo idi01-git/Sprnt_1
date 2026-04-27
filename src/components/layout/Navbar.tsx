@@ -370,13 +370,13 @@ export function Navbar() {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[#FFF8E7] border-b-3 border-[#1a1a2e]' : 'bg-transparent'
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[#E0F7FF] border-b-3 border-[#1a1a2e]' : 'bg-transparent'
           }`}
         style={{ animation: 'slideDown 0.6s ease-out', boxShadow: scrolled ? '0 4px 0 #1a1a2e' : 'none' }}
       >
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-           <Link href="/" className="flex items-center gap-2 transition-transform duration-200 hover:scale-105">
+            <Link href="/" className="flex items-center gap-2 transition-transform duration-200 hover:scale-105">
               <Image
                 src="/images/logo1.png"
                 alt="Sprintern logo"
@@ -418,7 +418,7 @@ export function Navbar() {
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => setUserMenuOpen((o) => !o)}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all duration-200 group border-2 border-transparent hover:border-[#1a1a2e] hover:bg-[#FFE156]"
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all duration-200 group border-2 border-transparent hover:border-[#1a1a2e] hover:bg-[#A8E6FF]"
                     style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700 }}
                   >
                     <div className="w-8 h-8 rounded-lg bg-[#FF6B9D] border-2 border-[#1a1a2e] flex items-center justify-center text-[#1a1a2e] text-sm font-extrabold shrink-0">
@@ -448,7 +448,7 @@ export function Navbar() {
                       <Link
                         href="/dashboard"
                         onClick={() => setUserMenuOpen(false)}
-                        className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-[#1a1a2e] hover:bg-[#FFE156] transition-colors"
+                        className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-[#1a1a2e] hover:bg-[#A8E6FF] transition-colors"
                         style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700 }}
                       >
                         My Dashboard
@@ -498,7 +498,7 @@ export function Navbar() {
 
       {showModal && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-[#FFF8E7] rounded-2xl border-3 border-[#1a1a2e] max-w-md w-full mx-4 overflow-hidden animate-scale-up max-h-[92vh] overflow-y-auto" style={{ boxShadow: '8px 8px 0 #1a1a2e' }}>
+          <div className="bg-[#E0F7FF] rounded-2xl border-3 border-[#1a1a2e] max-w-md w-full mx-4 overflow-hidden animate-scale-up max-h-[92vh] overflow-y-auto" style={{ boxShadow: '8px 8px 0 #1a1a2e' }}>
             <div className="flex justify-end p-6 pb-0">
               <button onClick={closeModal} className="w-8 h-8 rounded-lg flex items-center justify-center transition-all bg-[#FF6B6B] border-2 border-[#1a1a2e] hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-none" style={{ boxShadow: '2px 2px 0 #1a1a2e' }}>
                 <X className="w-5 h-5 text-[#1a1a2e]" />
@@ -529,10 +529,10 @@ export function Navbar() {
                       <Loader2 className="w-5 h-5 animate-spin" />
                     ) : (
                       <svg className="w-5 h-5" viewBox="0 0 24 24">
-                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                       </svg>
                     )}
                     Continue with Google
@@ -624,7 +624,7 @@ export function Navbar() {
                   </div>
 
                   {googleUser?.idToken ? (
-                    <div className="p-3 bg-[#FFE156] border-2 border-[#1a1a2e] rounded-xl flex items-center gap-3" style={{ boxShadow: '3px 3px 0 #1a1a2e' }}>
+                    <div className="p-3 bg-[#A8E6FF] border-2 border-[#1a1a2e] rounded-xl flex items-center gap-3" style={{ boxShadow: '3px 3px 0 #1a1a2e' }}>
                       <div className="w-10 h-10 rounded-lg bg-white border-2 border-[#1a1a2e] flex items-center justify-center">
                         <User className="w-5 h-5 text-[#1a1a2e]" />
                       </div>
@@ -645,10 +645,10 @@ export function Navbar() {
                         <Loader2 className="w-5 h-5 animate-spin" />
                       ) : (
                         <svg className="w-5 h-5" viewBox="0 0 24 24">
-                          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+                          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+                          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                         </svg>
                       )}
                       Continue with Google

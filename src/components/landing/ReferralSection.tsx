@@ -33,7 +33,7 @@ const ReferralSection = () => {
       {/* Decorative elements */}
       <div className="absolute top-10 left-10 w-20 h-20 rounded-full opacity-20" style={{ background: '#FF6B9D' }} />
       <div className="absolute bottom-10 right-10 w-28 h-28 rounded-lg rotate-12 opacity-15" style={{ background: '#4ECDC4' }} />
-      <div className="absolute top-1/2 right-1/3 w-12 h-12 rotate-45 opacity-10" style={{ background: '#FFE156' }} />
+      <div className="absolute top-1/2 right-1/3 w-12 h-12 rotate-45 opacity-10" style={{ background: '#A8E6FF' }} />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
         <div className="text-center mb-16 animate-fade-in">
@@ -45,9 +45,9 @@ const ReferralSection = () => {
                 fontFamily: "'Poppins', sans-serif",
                 fontWeight: 700,
                 fontSize: '16px',
-                background: '#FFE156',
+                background: '#A8E6FF',
                 color: '#1a1a2e',
-                border: '3px solid #FFE156',
+                border: '3px solid #A8E6FF',
                 boxShadow: '3px 3px 0 rgba(255,255,255,0.3)'
               }}
             >
@@ -66,7 +66,7 @@ const ReferralSection = () => {
             }}
           >
             Learn for Free?<br />
-            <span style={{ color: '#FFE156' }}>Yes, It's Possible!</span>
+            <span style={{ color: '#A8E6FF' }}>Yes, It's Possible!</span>
           </h2>
 
           <p
@@ -87,9 +87,9 @@ const ReferralSection = () => {
               fontFamily: "'Outfit', sans-serif",
               fontWeight: 800,
               fontSize: 'clamp(20px, 4vw, 28px)',
-              background: '#FFE156',
+              background: '#A8E6FF',
               color: '#1a1a2e',
-              border: '3px solid #FFE156',
+              border: '3px solid #A8E6FF',
               boxShadow: '5px 5px 0 rgba(255,255,255,0.2)'
             }}
           >

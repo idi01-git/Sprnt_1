@@ -63,7 +63,7 @@ export function CourseCard({ course, index = 0, popular = false, purchased = fal
                 fontFamily: "'Poppins', sans-serif",
                 fontWeight: 700,
                 fontSize: '12px',
-                background: '#FFE156',
+                background: '#A8E6FF',
                 color: '#1a1a2e',
                 border: '3px solid #1a1a2e',
                 boxShadow: '3px 3px 0 #1a1a2e'

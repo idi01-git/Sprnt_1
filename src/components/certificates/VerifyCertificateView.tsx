@@ -82,7 +82,7 @@ export function VerifyCertificateView({ initialCertificateId = '' }: { initialCe
     : 'border-[#1a1a2e] bg-[#95E77E] text-[#1a1a2e]'
 
   return (
-    <div className="min-h-screen bg-[#FFF8E7]">
+    <div className="min-h-screen bg-[#E0F7FF]">
       <Navbar />
       <div className="px-4 py-32 sm:px-6">
         <div className="mx-auto max-w-4xl">
@@ -170,14 +170,14 @@ export function VerifyCertificateView({ initialCertificateId = '' }: { initialCe
                     <p className="text-xs font-black uppercase tracking-[0.2em] text-[#1a1a2e] opacity-40" style={poppins}>REGISTRATION ID</p>
                     <p className="mt-1 text-3xl font-black text-[#1a1a2e]" style={outfit}>{result.certificate.certificateId}</p>
                   </div>
-                  <div className="bg-[#FFE156] border-[3px] border-[#1a1a2e] px-6 py-2 rounded-xl font-black text-[#1a1a2e]" style={{ boxShadow: '4px 4px 0 #1a1a2e', ...poppins }}>
+                  <div className="bg-[#A8E6FF] border-[3px] border-[#1a1a2e] px-6 py-2 rounded-xl font-black text-[#1a1a2e]" style={{ boxShadow: '4px 4px 0 #1a1a2e', ...poppins }}>
                     ISSUED: {new Date(result.certificate.issuedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase()}
                   </div>
                 </div>
 
                 <div className="grid gap-6 sm:grid-cols-2 relative z-10">
                   <DetailCard label="Full Name" value={result.certificate.studentName} bg="#A8E6FF" />
-                  <DetailCard label="Institution" value={result.certificate.collegeName} bg="#FFE156" />
+                  <DetailCard label="Institution" value={result.certificate.collegeName} bg="#A8E6FF" />
                   <DetailCard
                     label="Learning Track"
                     value={result.certificate.stream || result.certificate.branch

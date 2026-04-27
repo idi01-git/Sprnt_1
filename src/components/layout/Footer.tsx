@@ -38,13 +38,13 @@ const socialLinks = [
 
 export function Footer() {
   return (
-    <footer className="relative overflow-hidden pt-12" style={{ background: '#FFF8E7', color: '#1a1a2e' }}>
+    <footer className="relative overflow-hidden pt-12" style={{ background: '#E0F7FF', color: '#1a1a2e' }}>
       {/* Top border - thick neo-brutalist line */}
       <div className="h-[6px] w-full bg-[#1a1a2e]" />
 
       <div className="max-w-7xl mx-auto px-6 py-20 relative z-10">
         {/* Newsletter / CTA Section */}
-        <div className="mb-20 p-8 rounded-3xl bg-[#FFE156] border-[4px] border-[#1a1a2e] flex flex-col md:flex-row items-center justify-between gap-8" style={{ boxShadow: '10px 10px 0 #1a1a2e' }}>
+        <div className="mb-20 p-8 rounded-3xl bg-[#A8E6FF] border-[4px] border-[#1a1a2e] flex flex-col md:flex-row items-center justify-between gap-8" style={{ boxShadow: '10px 10px 0 #1a1a2e' }}>
           <div className="max-w-md">
             <h3 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 900, fontSize: '32px', lineHeight: '1.1', color: '#1a1a2e' }}>
               JOIN THE SPRINTERN.

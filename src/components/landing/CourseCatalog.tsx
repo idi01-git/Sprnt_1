@@ -41,7 +41,7 @@ export function CourseCatalog({
 
   const categories = ['All', 'Chemical', 'Civil', 'Mechanical', 'Electrical', 'Electronic', 'CSE/IT'];
   const categoryColors: Record<string, string> = {
-    All: '#FFE156', Chemical: '#FF6B9D', Civil: '#95E77E', Mechanical: '#B084FF',
+    All: '#A8E6FF', Chemical: '#FF6B9D', Civil: '#95E77E', Mechanical: '#B084FF',
     Electrical: '#4ECDC4', Electronic: '#FFB347', 'CSE/IT': '#A8E6FF'
   };
 
@@ -129,7 +129,7 @@ export function CourseCatalog({
   };
 
   return (
-    <section id="courses" className="py-24 relative overflow-hidden" style={{ background: '#FFF8E7' }}>
+    <section id="courses" className="py-24 relative overflow-hidden" style={{ background: '#E0F7FF' }}>
       {/* Request Modal */}
       {showRequestModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.5)' }}>
@@ -238,7 +238,7 @@ export function CourseCatalog({
         {loading && (
           <div className="flex items-center justify-center py-20">
             <div className="flex flex-col items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl flex items-center justify-center animate-neo-bounce" style={{ background: '#FFE156', border: '3px solid #1a1a2e', boxShadow: '3px 3px 0 #1a1a2e' }}>
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center animate-neo-bounce" style={{ background: '#A8E6FF', border: '3px solid #1a1a2e', boxShadow: '3px 3px 0 #1a1a2e' }}>
                 <Loader2 className="w-6 h-6 animate-spin" style={{ color: '#1a1a2e' }} />
               </div>
               <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, color: '#1a1a2e' }}>Loading courses...</p>
