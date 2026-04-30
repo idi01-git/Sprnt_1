@@ -36,17 +36,17 @@ export default async function DashboardExplorePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-linear-to-r from-purple-600 to-blue-600 px-6 py-16">
+    <div className="min-h-screen bg-neo-cream">
+      <div className="bg-neo-purple border-b-[3px] border-neo-black px-6 py-16" style={{boxShadow:'0 3px 0 #1a1a2e'}}>
         <div className="mx-auto max-w-7xl">
           <h1
-            className="mb-4 text-4xl font-bold text-white"
+            className="mb-4 text-4xl font-extrabold text-neo-black"
             style={{ fontFamily: 'var(--font-outfit)' }}
           >
             Explore Courses
           </h1>
           <p
-            className="max-w-2xl text-lg text-white/80"
+            className="max-w-2xl text-lg text-neo-black/80 font-semibold"
             style={{ fontFamily: 'var(--font-poppins)' }}
           >
             Browse every course available on Sprintern. Purchased courses stay visible here so you can jump back in anytime.

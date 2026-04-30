@@ -3,7 +3,8 @@
 import { FormEvent, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { AlertCircle, BadgeCheck, Ban, Loader2, Search } from 'lucide-react'
+import { AlertCircle, BadgeCheck, Ban, Loader2, Search, ArrowLeft, ShieldCheck } from 'lucide-react'
+import { Navbar } from '@/components/layout/Navbar'
 
 const poppins: React.CSSProperties = { fontFamily: "'Poppins', sans-serif" }
 const outfit: React.CSSProperties = { fontFamily: "'Outfit', sans-serif" }
@@ -46,7 +47,7 @@ export function VerifyCertificateView({ initialCertificateId = '' }: { initialCe
       const payload = await response.json().catch(() => null)
 
       if (!response.ok || !payload?.success || !payload?.data) {
-        setError(payload?.error?.message || 'Certificate not found.')
+        setError(payload?.error?.message || 'Certificate not found. Please check the ID and try again.')
         return
       }
 
@@ -77,120 +78,144 @@ export function VerifyCertificateView({ initialCertificateId = '' }: { initialCe
   }
 
   const statusTone = result?.status === 'revoked'
-    ? 'border-red-200 bg-red-50 text-red-700'
-    : 'border-green-200 bg-green-50 text-green-700'
+    ? 'border-[#1a1a2e] bg-[#FF6B6B] text-[#1a1a2e]'
+    : 'border-[#1a1a2e] bg-[#95E77E] text-[#1a1a2e]'
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50 px-4 py-16 sm:px-6">
-      <div className="mx-auto max-w-4xl">
-        <div className="mb-10 text-center">
-          <p className="mb-3 text-sm uppercase tracking-[0.3em] text-purple-600" style={poppins}>Certificate Verification</p>
-          <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl" style={{ ...outfit, fontWeight: 800 }}>
-            Verify a Sprintern Certificate
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-sm text-gray-500 sm:text-base" style={poppins}>
-            Enter a certificate ID like <span className="font-semibold text-gray-700">CERT-ABCD-XYZA</span> to confirm the issued record.
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="mx-auto mb-8 max-w-2xl rounded-3xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <div className="relative flex-1">
-              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-              <input
-                value={certificateId}
-                onChange={(event) => setCertificateId(event.target.value.toUpperCase())}
-                placeholder="Enter certificate ID"
-                className="w-full rounded-2xl border border-gray-200 py-3 pl-11 pr-4 text-sm text-gray-900 outline-none transition focus:border-purple-400 focus:ring-2 focus:ring-purple-100"
-                style={poppins}
-              />
+    <div className="min-h-screen bg-[#E0F7FF]">
+      <Navbar />
+      <div className="px-4 py-32 sm:px-6">
+        <div className="mx-auto max-w-4xl">
+          <div className="mb-12 text-center">
+            <div 
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl mb-6 bg-[#B084FF] border-[3px] border-[#1a1a2e]"
+              style={{ boxShadow: '4px 4px 0 #1a1a2e' }}
+            >
+              <ShieldCheck className="w-5 h-5 text-[#1a1a2e]" />
+              <span style={{ ...poppins, fontWeight: 800, fontSize: '12px', letterSpacing: '0.1em', color: '#1a1a2e' }}>
+                TRUST & VERIFICATION
+              </span>
             </div>
-            <button
-              type="submit"
-              className="rounded-2xl bg-linear-to-r from-purple-600 to-blue-600 px-6 py-3 text-sm font-semibold text-white transition hover:shadow-lg"
+            
+            <h1 className="text-4xl font-black text-[#1a1a2e] sm:text-6xl mb-4" style={{ ...outfit, lineHeight: '1' }}>
+              Verify Credentials
+            </h1>
+            <p className="mx-auto max-w-2xl text-lg font-bold text-[#1a1a2e] opacity-70" style={poppins}>
+              Enter a certificate ID (e.g. <span className="text-[#FF6B9D]">CERT-ABCD-XYZA</span>) to confirm its authenticity.
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="mx-auto mb-12 max-w-2xl">
+            <div className="flex flex-col gap-4 sm:flex-row">
+              <div className="relative flex-1 group">
+                <Search className="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-[60%] text-[#1a1a2e]" strokeWidth={3} />
+                <input
+                  value={certificateId}
+                  onChange={(event) => setCertificateId(event.target.value.toUpperCase())}
+                  placeholder="ENTER CERTIFICATE ID"
+                  className="neo-input w-full py-4 !pl-14 pr-4 bg-white font-extrabold uppercase"
+                  style={poppins}
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="neo-btn neo-btn-primary px-10 py-4 flex items-center justify-center gap-2 min-w-[140px]"
+              >
+                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'VERIFY'}
+              </button>
+            </div>
+          </form>
+
+          {loading && (
+            <div className="flex flex-col items-center justify-center py-20 gap-4">
+              <Loader2 className="h-12 w-12 animate-spin text-[#1a1a2e]" />
+              <p className="font-bold text-[#1a1a2e]" style={poppins}>SCRUTINIZING RECORDS...</p>
+            </div>
+          )}
+
+          {!loading && error && (
+            <div className="rounded-3xl border-[3px] border-[#1a1a2e] bg-[#FF6B6B] p-8 text-center animate-scale-up" style={{ boxShadow: '8px 8px 0 #1a1a2e' }}>
+              <AlertCircle className="mx-auto mb-4 h-12 w-12 text-[#1a1a2e]" />
+              <p className="text-xl font-black text-[#1a1a2e]" style={outfit}>{error}</p>
+            </div>
+          )}
+
+          {!loading && result && (
+            <div className="space-y-8 animate-scale-up">
+              <div className={`rounded-3xl border-[3px] p-6 ${statusTone}`} style={{ boxShadow: '8px 8px 0 #1a1a2e' }}>
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-white border-[3px] border-[#1a1a2e] flex items-center justify-center shrink-0">
+                     {result.status === 'revoked' ? <Ban className="h-8 w-8 text-[#FF6B6B]" /> : <BadgeCheck className="h-8 w-8 text-[#95E77E]" />}
+                  </div>
+                  <div>
+                    <p className="text-2xl font-black uppercase tracking-tight" style={outfit}>
+                      {result.status === 'revoked' ? 'CERTIFICATE REVOKED' : 'CERTIFICATE VALIDATED'}
+                    </p>
+                    <p className="font-bold opacity-80" style={poppins}>
+                      {result.status === 'revoked' 
+                        ? (result.certificate.revocationReason || 'This record has been officially withdrawn.') 
+                        : 'This document is authentic and issued by Sprintern.'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-3xl border-[3px] border-[#1a1a2e] bg-white p-8 overflow-hidden relative" style={{ boxShadow: '12px 12px 0 #1a1a2e' }}>
+                {/* Decorative watermark */}
+                <ShieldCheck className="absolute -right-8 -bottom-8 w-48 h-48 text-[#1a1a2e] opacity-[0.03] rotate-12" />
+
+                <div className="mb-8 flex flex-wrap items-center justify-between gap-6 relative z-10">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-[0.2em] text-[#1a1a2e] opacity-40" style={poppins}>REGISTRATION ID</p>
+                    <p className="mt-1 text-3xl font-black text-[#1a1a2e]" style={outfit}>{result.certificate.certificateId}</p>
+                  </div>
+                  <div className="bg-[#A8E6FF] border-[3px] border-[#1a1a2e] px-6 py-2 rounded-xl font-black text-[#1a1a2e]" style={{ boxShadow: '4px 4px 0 #1a1a2e', ...poppins }}>
+                    ISSUED: {new Date(result.certificate.issuedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase()}
+                  </div>
+                </div>
+
+                <div className="grid gap-6 sm:grid-cols-2 relative z-10">
+                  <DetailCard label="Full Name" value={result.certificate.studentName} bg="#A8E6FF" />
+                  <DetailCard label="Institution" value={result.certificate.collegeName} bg="#A8E6FF" />
+                  <DetailCard
+                    label="Learning Track"
+                    value={result.certificate.stream || result.certificate.branch
+                      ? `${result.certificate.courseName} (${result.certificate.stream || result.certificate.branch})`
+                      : result.certificate.courseName}
+                    bg="#FFD4B8"
+                  />
+                  <DetailCard label="Branch/Stream" value={result.certificate.stream || result.certificate.branch || 'GENERAL'} bg="#B8F0D8" />
+                  <DetailCard label="Date of Birth" value={result.certificate.dateOfBirth ? new Date(result.certificate.dateOfBirth).toLocaleDateString('en-IN') : 'N/A'} bg="#FFB347" />
+                  <DetailCard label="Performance Score" value={result.certificate.finalScore !== null ? `${result.certificate.finalScore.toFixed(2)} / 5.0` : 'N/A'} bg="#95E77E" />
+                  <DetailCard label="Awarded Grade" value={result.certificate.grade} bg="#FF6B9D" />
+                  <DetailCard label="Grade Category" value={result.certificate.gradeCategory || 'N/A'} bg="#B084FF" />
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="mt-12 text-center">
+            <Link 
+              href="/" 
+              className="inline-flex items-center gap-2 font-black text-[#1a1a2e] hover:text-[#FF6B9D] transition-colors uppercase tracking-widest text-sm" 
               style={poppins}
             >
-              Verify
-            </button>
+              <ArrowLeft className="w-4 h-4" />
+              Return to HQ
+            </Link>
           </div>
-        </form>
-
-        {loading && (
-          <div className="flex items-center justify-center py-16">
-            <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
-          </div>
-        )}
-
-        {!loading && error && (
-          <div className="rounded-3xl border border-red-200 bg-red-50 p-6 text-center">
-            <AlertCircle className="mx-auto mb-3 h-8 w-8 text-red-500" />
-            <p className="text-sm font-semibold text-red-700" style={poppins}>{error}</p>
-          </div>
-        )}
-
-        {!loading && result && (
-          <div className="space-y-6">
-            <div className={`rounded-3xl border p-5 ${statusTone}`}>
-              <div className="flex items-start gap-3">
-                {result.status === 'revoked' ? <Ban className="mt-0.5 h-6 w-6" /> : <BadgeCheck className="mt-0.5 h-6 w-6" />}
-                <div>
-                  <p className="text-lg font-semibold" style={poppins}>
-                    {result.status === 'revoked' ? 'This certificate has been revoked.' : 'This certificate is valid.'}
-                  </p>
-                  {result.status === 'revoked' && result.certificate.revocationReason && (
-                    <p className="mt-2 text-sm" style={poppins}>
-                      Revoked due to: {result.certificate.revocationReason}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
-              <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.25em] text-gray-400" style={poppins}>Certificate ID</p>
-                  <p className="mt-2 text-xl font-semibold text-gray-900" style={outfit}>{result.certificate.certificateId}</p>
-                </div>
-                <div className="rounded-full bg-gray-100 px-4 py-2 text-sm text-gray-600" style={poppins}>
-                  {new Date(result.certificate.issuedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                </div>
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <DetailCard label="Student Name" value={result.certificate.studentName} />
-                <DetailCard label="College Name" value={result.certificate.collegeName} />
-                <DetailCard
-                  label="Course"
-                  value={result.certificate.stream || result.certificate.branch
-                    ? `${result.certificate.courseName} (${result.certificate.stream || result.certificate.branch})`
-                    : result.certificate.courseName}
-                />
-                <DetailCard label="Stream" value={result.certificate.stream || result.certificate.branch || 'Not available'} />
-                <DetailCard label="Date of Birth" value={result.certificate.dateOfBirth ? new Date(result.certificate.dateOfBirth).toLocaleDateString('en-IN') : 'Not available'} />
-                <DetailCard label="Final Score" value={result.certificate.finalScore !== null ? `${result.certificate.finalScore.toFixed(2)} / 5` : 'Not available'} />
-                <DetailCard label="Grade" value={result.certificate.grade} />
-                <DetailCard label="Grade Category" value={result.certificate.gradeCategory || 'Not available'} />
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="mt-8 text-center">
-          <Link href="/" className="text-sm text-gray-500 transition hover:text-purple-600" style={poppins}>
-            Back to Sprintern
-          </Link>
         </div>
       </div>
     </div>
   )
 }
 
-function DetailCard({ label, value }: { label: string; value: string }) {
+function DetailCard({ label, value, bg }: { label: string; value: string; bg: string }) {
   return (
-    <div className="rounded-2xl bg-gray-50 p-4">
-      <p className="text-xs uppercase tracking-[0.2em] text-gray-400" style={poppins}>{label}</p>
-      <p className="mt-2 text-sm font-semibold text-gray-900" style={poppins}>{value}</p>
+    <div className="rounded-2xl border-[3px] border-[#1a1a2e] p-5 group transition-all hover:translate-x-[-2px] hover:translate-y-[-2px]" style={{ background: bg, boxShadow: '4px 4px 0 #1a1a2e' }}>
+      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#1a1a2e] opacity-50 mb-1" style={poppins}>{label}</p>
+      <p className="text-base font-black text-[#1a1a2e] truncate" style={poppins}>{value.toUpperCase()}</p>
     </div>
   )
 }

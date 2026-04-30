@@ -2,82 +2,55 @@
 @import 'tw-animate-css';
 
 /* ===========================================
-   THEME TOKENS (from frontend)
+   NEO BRUTALISM THEME TOKENS
    =========================================== */
 
 :root {
   --font-size: 16px;
-  --background: #ffffff;
-  --foreground: oklch(0.145 0 0);
+  --background: #E0F7FF;
+  --foreground: #1a1a2e;
   --card: #ffffff;
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: #030213;
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.95 0.0058 264.53);
-  --secondary-foreground: #030213;
-  --muted: #ececf0;
-  --muted-foreground: #717182;
-  --accent: #e9ebef;
-  --accent-foreground: #030213;
-  --destructive: #d4183d;
-  --destructive-foreground: #ffffff;
-  --border: rgba(0, 0, 0, 0.1);
+  --card-foreground: #1a1a2e;
+  --popover: #ffffff;
+  --popover-foreground: #1a1a2e;
+  --primary: #1a1a2e;
+  --primary-foreground: #ffffff;
+  --secondary: #E0F7FF;
+  --muted: #BEE3F8;
+  --muted-foreground: #4a4a68;
+  --accent: #A8E6FF;
+  --accent-foreground: #1a1a2e;
+  --destructive: #FF6B6B;
+  --destructive-foreground: #1a1a2e;
+  --border: #1a1a2e;
   --input: transparent;
-  --input-background: #f3f3f5;
+  --input-background: #ffffff;
   --switch-background: #cbced4;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --ring: oklch(0.708 0 0);
-  
-  /* Custom colors for landing */
-  --purple-50: #faf5ff;
-  --purple-100: #f3e8ff;
-  --purple-200: #e9d5ff;
-  --purple-300: #d8b4fe;
-  --purple-400: #c084fc;
-  --purple-500: #a855f7;
-  --purple-600: #9333ea;
-  --purple-700: #7e22ce;
-  --purple-800: #6b21a8;
-  --purple-900: #581c87;
-  
-  --blue-50: #eff6ff;
-  --blue-100: #dbeafe;
-  --blue-200: #bfdbfe;
-  --blue-300: #93c5fd;
-  --blue-400: #60a5fa;
-  --blue-500: #3b82f6;
-  --blue-600: #2563eb;
-  --blue-700: #1d4ed8;
-  --blue-800: #1e40af;
-  --blue-900: #1e3a8a;
-}
+  --ring: #1a1a2e;
 
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.145 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.145 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.985 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.396 0.141 25.723);
-    --destructive-foreground: oklch(0.637 0.237 25.331);
-    --border: oklch(0.269 0 0);
-    --input: oklch(0.269 0 0);
-    --ring: oklch(0.439 0 0);
-  }
+  /* Neo Brutalism Palette */
+  --neo-yellow: #A8E6FF;
+  --neo-pink: #FF6B9D;
+  --neo-blue: #4ECDC4;
+  --neo-green: #95E77E;
+  --neo-coral: #FF6B6B;
+  --neo-purple: #B084FF;
+  --neo-orange: #FFB347;
+  --neo-lavender: #E8D5FF;
+  --neo-mint: #B8F0D8;
+  --neo-peach: #FFD4B8;
+  --neo-sky: #A8E6FF;
+  --neo-cream: #E0F7FF;
+  --neo-black: #1a1a2e;
+  --neo-white: #ffffff;
+
+  /* Shadow */
+  --neo-shadow-sm: 3px 3px 0px #1a1a2e;
+  --neo-shadow: 5px 5px 0px #1a1a2e;
+  --neo-shadow-lg: 8px 8px 0px #1a1a2e;
+  --neo-shadow-hover: 2px 2px 0px #1a1a2e;
 }
 
 @theme inline {
@@ -102,12 +75,27 @@
   --color-input-background: var(--input-background);
   --color-switch-background: var(--switch-background);
   --color-ring: var(--ring);
-  
+
   --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
   --font-heading: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
-  
+
   --radius-lg: 0.625rem;
   --radius-xl: 0.875rem;
+
+  /* Neo Brutalism Colors */
+  --color-neo-yellow: #A8E6FF;
+  --color-neo-pink: #FF6B9D;
+  --color-neo-blue: #4ECDC4;
+  --color-neo-green: #95E77E;
+  --color-neo-coral: #FF6B6B;
+  --color-neo-purple: #B084FF;
+  --color-neo-orange: #FFB347;
+  --color-neo-lavender: #E8D5FF;
+  --color-neo-mint: #B8F0D8;
+  --color-neo-peach: #FFD4B8;
+  --color-neo-sky: #A8E6FF;
+  --color-neo-cream: #E0F7FF;
+  --color-neo-black: #1a1a2e;
 }
 
 @layer base {
@@ -119,14 +107,201 @@
     @apply bg-background text-foreground;
     font-family: var(--font-poppins), sans-serif;
   }
-  
+
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-outfit), sans-serif;
   }
 }
 
 /* ===========================================
-   CUSTOM ANIMATIONS (from frontend animations.css)
+   NEO BRUTALISM UTILITY CLASSES
+   =========================================== */
+
+/* Card styles */
+.neo-card {
+  background: var(--neo-white);
+  border: 3px solid var(--neo-black);
+  box-shadow: var(--neo-shadow);
+  border-radius: 16px;
+  transition: all 0.15s ease;
+}
+
+.neo-card:hover {
+  box-shadow: var(--neo-shadow-hover);
+  transform: translate(3px, 3px);
+}
+
+.neo-card-static {
+  background: var(--neo-white);
+  border: 3px solid var(--neo-black);
+  box-shadow: var(--neo-shadow);
+  border-radius: 16px;
+}
+
+/* Button styles */
+.neo-btn {
+  border: 3px solid var(--neo-black);
+  box-shadow: var(--neo-shadow-sm);
+  border-radius: 12px;
+  font-weight: 700;
+  transition: all 0.1s ease;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.neo-btn:hover {
+  box-shadow: 1px 1px 0px var(--neo-black);
+  transform: translate(2px, 2px);
+}
+
+.neo-btn:active {
+  box-shadow: 0px 0px 0px var(--neo-black);
+  transform: translate(3px, 3px);
+}
+
+.neo-btn-primary {
+  background: var(--neo-yellow);
+  color: var(--neo-black);
+}
+
+.neo-btn-pink {
+  background: var(--neo-pink);
+  color: var(--neo-black);
+}
+
+.neo-btn-blue {
+  background: var(--neo-blue);
+  color: var(--neo-black);
+}
+
+.neo-btn-coral {
+  background: var(--neo-coral);
+  color: var(--neo-black);
+}
+
+.neo-btn-purple {
+  background: var(--neo-purple);
+  color: var(--neo-black);
+}
+
+.neo-btn-green {
+  background: var(--neo-green);
+  color: var(--neo-black);
+}
+
+/* Input styles */
+.neo-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 3px solid var(--neo-black);
+  border-radius: 12px;
+  background: var(--neo-white);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--neo-black);
+  transition: all 0.15s ease;
+  outline: none;
+  box-shadow: 3px 3px 0px var(--neo-black);
+}
+
+.neo-input:focus {
+  box-shadow: 5px 5px 0px var(--neo-black);
+  background: #FFF;
+}
+
+.neo-input::placeholder {
+  color: #999;
+  font-weight: 400;
+}
+
+.neo-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Badge / Tag */
+.neo-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border: 2px solid var(--neo-black);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Progress bar */
+.neo-progress {
+  background: var(--neo-cream);
+  border: 2px solid var(--neo-black);
+  border-radius: 999px;
+  height: 16px;
+  overflow: hidden;
+}
+
+.neo-progress-bar {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.5s ease;
+}
+
+/* Tab styles */
+.neo-tab {
+  padding: 10px 20px;
+  border: 3px solid var(--neo-black);
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.neo-tab-active {
+  box-shadow: var(--neo-shadow-sm);
+}
+
+.neo-tab:hover:not(.neo-tab-active) {
+  transform: translate(-1px, -1px);
+  box-shadow: 2px 2px 0px var(--neo-black);
+}
+
+/* Divider */
+.neo-divider {
+  border-top: 3px solid var(--neo-black);
+}
+
+/* Neo shadow utilities */
+.shadow-neo-sm {
+  box-shadow: 3px 3px 0px var(--neo-black);
+}
+
+.shadow-neo {
+  box-shadow: 5px 5px 0px var(--neo-black);
+}
+
+.shadow-neo-lg {
+  box-shadow: 8px 8px 0px var(--neo-black);
+}
+
+.shadow-neo-hover {
+  box-shadow: 2px 2px 0px var(--neo-black);
+}
+
+.border-neo {
+  border: 3px solid var(--neo-black);
+}
+
+.border-neo-2 {
+  border: 2px solid var(--neo-black);
+}
+
+/* ===========================================
+   CUSTOM ANIMATIONS
    =========================================== */
 
 @keyframes slideDown {
@@ -231,7 +406,6 @@
   }
 }
 
-/* Frontend blob animation - more subtle and smooth */
 @keyframes blob {
   0%, 100% {
     transform: translate(0, 0) scale(1);
@@ -308,6 +482,35 @@
   }
 }
 
+@keyframes neoWiggle {
+  0%, 100% {
+    transform: rotate(-1deg);
+  }
+  50% {
+    transform: rotate(1deg);
+  }
+}
+
+@keyframes neoBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes neoSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Animation Classes */
 .animate-slide-down {
   animation: slideDown 0.6s ease-out forwards;
@@ -356,7 +559,6 @@
   animation: floatRotate 3s ease-in-out infinite;
 }
 
-/* Frontend blob timing - 7s instead of 20s */
 .animate-blob {
   animation: blob 7s ease-in-out infinite;
 }
@@ -384,6 +586,18 @@
 
 .animate-stats-loop {
   animation: statsLoop 30s linear infinite;
+}
+
+.animate-neo-wiggle {
+  animation: neoWiggle 2s ease-in-out infinite;
+}
+
+.animate-neo-bounce {
+  animation: neoBounce 1.5s ease-in-out infinite;
+}
+
+.animate-neo-slide-in {
+  animation: neoSlideIn 0.4s ease-out forwards;
 }
 
 /* Animation Delays */
@@ -453,13 +667,21 @@
   animation-play-state: paused;
 }
 
-/* Frontend animation timing overrides */
-.animation-delay-2000 {
-  animation-delay: 2s;
+/* Neo Brutalism checkerboard pattern (decorative) */
+.neo-pattern {
+  background-image: radial-gradient(circle, var(--neo-black) 1px, transparent 1px);
+  background-size: 16px 16px;
 }
 
-.animation-delay-4000 {
-  animation-delay: 4s;
+/* Neo Brutalism diagonal stripes */
+.neo-stripes {
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 5px,
+    rgba(26, 26, 46, 0.05) 5px,
+    rgba(26, 26, 46, 0.05) 10px
+  );
 }
 
 /* ===========================================
@@ -484,4 +706,18 @@
 [style*="color-scheme: light"] td,
 [style*="color-scheme: light"] th {
   color: inherit;
+}
+
+/* Scrollbar neo styling */
+.neo-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.neo-scrollbar::-webkit-scrollbar-track {
+  background: var(--neo-cream);
+}
+
+.neo-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--neo-black);
+  border-radius: 4px;
 }

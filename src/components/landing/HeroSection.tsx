@@ -3,209 +3,119 @@
 import { useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Sparkles, TrendingUp, Award, Users, ArrowRight } from 'lucide-react';
-import { BackgroundEffect } from './BackgroundEffect';
-import { FloatingParticles } from './FloatingParticles';
+import { Sparkles, TrendingUp, ArrowRight } from 'lucide-react';
 
-const heroMain = '/images/hero (1).svg';
+const heroMain = '/images/right_vector2.png';
 
 const HeroSection = () => {
   const imgRef = useRef<HTMLDivElement | null>(null);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-linear-to-br from-purple-50 via-white to-blue-50 pt-24 pb-20">
-      {/* Animated Background Elements */}
-      <BackgroundEffect variant="gradient" />
-      <FloatingParticles count={15} color="#a855f7" />
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24 pb-20" style={{ background: '#E0F7FF' }}>
+      {/* Neo Brutalism Decorative Elements */}
+      <div className="absolute top-10 left-5 w-32 h-32 rounded-full opacity-40 animate-float" style={{ background: '#FF6B9D' }} />
+      <div className="absolute bottom-20 right-16 w-24 h-24 rounded-lg rotate-12 opacity-30 animate-float animation-delay-500" style={{ background: '#4ECDC4' }} />
+      <div className="absolute top-1/3 right-1/4 w-16 h-16 rotate-45 opacity-20" style={{ background: '#A8E6FF', border: '3px solid #1a1a2e' }} />
+      <div className="absolute bottom-1/3 left-1/4 w-12 h-12 rounded-full opacity-25" style={{ background: '#B084FF' }} />
+
+      {/* Dot pattern */}
+      <div className="absolute inset-0 neo-pattern opacity-30 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left Content */}
           <div className="animate-fade-in-up">
-            {/* Badge */}
-            <div
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 animate-fade-in animation-delay-300 relative group"
-            >
-              {/* Enhanced Glassmorphic Badge */}
-              <div className="absolute inset-0 bg-linear-to-r from-purple-500/10 via-blue-500/10 to-purple-500/10 backdrop-blur-xl rounded-full border border-purple-300/50"
-                style={{ boxShadow: '0 8px 32px rgba(139, 92, 246, 0.15), inset 0 0 20px rgba(255, 255, 255, 0.1)' }}
-              />
-              <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                style={{ boxShadow: '0 0 30px rgba(139, 92, 246, 0.3)' }}
-              />
-              <Sparkles className="w-4 h-4 text-purple-600 relative z-10" />
-              <span 
-                className="text-purple-700 relative z-10"
-                style={{ 
-                  fontFamily: "'Poppins', sans-serif",
-                  fontWeight: 600,
-                  fontSize: '14px'
-                }}
-              >
-                Transform Your Career in 14 Days
-              </span>
-            </div>
-
             <h1
-              className="mb-6 bg-linear-to-r from-purple-900 via-blue-900 to-purple-900 bg-clip-text text-transparent animate-fade-in animation-delay-400"
-              style={{ 
+              className="mb-8 animate-fade-in animation-delay-400"
+              style={{
                 fontFamily: "'Outfit', sans-serif",
-                fontWeight: 800,
-                fontSize: '56px',
-                lineHeight: '1.1'
+                fontWeight: 900,
+                fontSize: '64px',
+                lineHeight: '1.2',
+                color: '#1a1a2e'
               }}
             >
               Get Industrial Experience in{' '}
-              <span className="relative inline-block">
-                14 Days
-                <div
-                  className="absolute -bottom-2 left-0 right-0 h-3 bg-linear-to-r from-purple-400 to-blue-400 opacity-30 rounded animate-expand-width animation-delay-1000"
-                />
+              <span className="relative inline-block translate-y-4">
+                <span style={{ background: '#FF6B9D', padding: '4px 12px', borderRadius: '12px', border: '3px solid #1a1a2e' }}>
+                  14 Days
+                </span>
               </span>
             </h1>
 
             <p
-              className="text-gray-600 mb-8 animate-fade-in animation-delay-500"
-              style={{ 
+              className="mb-12 animate-fade-in animation-delay-500"
+              style={{
                 fontFamily: "'Poppins', sans-serif",
-                fontWeight: 400,
-                fontSize: '18px',
-                lineHeight: '1.7'
+                fontWeight: 500,
+                fontSize: '20px',
+                lineHeight: '1.7',
+                color: '#1a1a2e',
+                opacity: 0.9
               }}
             >
               Tool-specific virtual internships for Core Engineers.{' '}
-              <span className="font-semibold text-purple-700"> Verified by Faculty.</span>
-              <span className="font-semibold text-blue-700"> Accepted by Industry.</span>
+              <span className="font-bold" style={{ background: '#B084FF', padding: '1px 6px', borderRadius: '4px' }}>Verified by Faculty.</span>{' '}
+              <span className="font-bold" style={{ background: '#4ECDC4', padding: '1px 6px', borderRadius: '4px' }}>Accepted by Industry.</span>
             </p>
 
-            <div
-              className="flex flex-wrap gap-4 mb-10 animate-fade-in animation-delay-600"
-            >
+            <div className="flex flex-wrap gap-5 animate-fade-in animation-delay-600">
               <button
                 onClick={() => document.getElementById('courses')?.scrollIntoView({ behavior: 'smooth' })}
-                className="relative px-8 py-4 rounded-xl overflow-hidden group shadow-lg shadow-purple-500/30 transition-all duration-200 hover:scale-105 hover:-translate-y-0.5 active:scale-95"
+                className="neo-btn neo-btn-primary px-10 py-5"
                 style={{
                   fontFamily: "'Poppins', sans-serif",
-                  fontWeight: 600,
-                  fontSize: '16px'
+                  fontWeight: 700,
+                  fontSize: '18px'
                 }}
               >
-                <div className="absolute inset-0 bg-linear-to-r from-purple-600 to-blue-600" />
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-linear-to-r from-purple-500 to-blue-500" />
-                <span className="relative text-white z-10 flex items-center gap-2">
-                  Explore Internships
-                  <TrendingUp className="w-5 h-5" />
+                <span className="flex items-center gap-3">
+                  EXPLORE INTERNSHIPS
+                  <TrendingUp className="w-6 h-6" />
                 </span>
               </button>
 
-
               <Link
                 href="/courses/full-stack-web-development/day-1"
-                className="px-8 py-4 rounded-xl border-2 border-purple-200 bg-white hover:bg-purple-50 transition-all shadow-sm flex items-center gap-2 hover:scale-105 hover:-translate-y-0.5 active:scale-95"
-                style={{ 
+                className="neo-btn bg-white px-10 py-5 flex items-center gap-2"
+                style={{
                   fontFamily: "'Poppins', sans-serif",
-                  fontWeight: 600,
-                  fontSize: '16px',
-                  color: '#7C3AED'
+                  fontWeight: 700,
+                  fontSize: '18px',
+                  color: '#1a1a2e'
                 }}
               >
-                Try Free
-                <ArrowRight className="w-4 h-4 ml-1" />
+                TRY FREE
+                <ArrowRight className="w-5 h-5 ml-1" />
               </Link>
-            </div>
-
-            {/* Trust Indicators */}
-            <div
-              className="grid grid-cols-3 gap-6 animate-fade-in animation-delay-800"
-            >
-              {[
-                { icon: Users, value: '10K+', label: 'Students' },
-                { icon: Award, value: '98%', label: 'Success Rate' },
-                { icon: Sparkles, value: '4.9/5', label: 'Rating' }
-              ].map((stat, index) => (
-                <div key={index} className="text-center">
-                  <div className="flex items-center justify-center mb-2">
-                    <stat.icon className="w-5 h-5 text-purple-600" />
-                  </div>
-                  <div 
-                    className="text-purple-900 mb-1"
-                    style={{ 
-                      fontFamily: "'Outfit', sans-serif",
-                      fontWeight: 700,
-                      fontSize: '20px'
-                    }}
-                  >
-                    {stat.value}
-                  </div>
-                  <div 
-                    className="text-gray-600"
-                    style={{ 
-                      fontFamily: "'Poppins', sans-serif",
-                      fontWeight: 400,
-                      fontSize: '13px'
-                    }}
-                  >
-                    {stat.label}
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
 
-          {/* Right Content - 3D Card Grid */}
+          {/* Right Content - Image */}
           <div className="relative animate-fade-in-right animation-delay-400">
             <div className="flex justify-center">
-              {[
-                { img: heroMain, delay: 500 }
-              ].map((item, index) => (
-                <div
-                  key={index}
-                  className="relative group animate-fade-in-up w-full max-w-3xl"
-                  style={{ 
-                    perspective: '1200px',
-                    animationDelay: `${item.delay}ms`
-                  }}
-                  onMouseMove={(e) => {
-                    const el = imgRef.current;
-                    if (!el) return;
-                    const rect = el.getBoundingClientRect();
-                    const x = (e.clientX - rect.left) / rect.width - 0.5;
-                    const y = (e.clientY - rect.top) / rect.height - 0.5;
-                    const rotateY = x * 14;
-                    const rotateX = -y * 10;
-                    el.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(0)`;
-                  }}
-                  onMouseLeave={() => {
-                    const el = imgRef.current;
-                    if (!el) return;
-                    el.style.transform = 'rotateX(0deg) rotateY(0deg) translateZ(0)';
-                  }}
-                >
-                  <div
-                    ref={imgRef}
-                    className="relative rounded-2xl overflow-hidden shadow-2xl shadow-purple-500/20 transition-transform duration-500"
-                    style={{ transformStyle: 'preserve-3d' }}
-                  >
-                    <div className="absolute inset-0 bg-linear-to-br from-purple-600/20 to-blue-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
-                    <Image
-                      src={item.img}
-                      alt="Engineering Software"
-                      width={600}
-                      height={400}
-                      className="w-full h-auto object-cover"
-                      priority
-                    />
-                  </div>
-                </div>
-              ))}
+              <div
+                ref={imgRef}
+                className="relative rounded-2xl overflow-hidden"
+                style={{ border: '4px solid #1a1a2e', boxShadow: '8px 8px 0 #1a1a2e' }}
+              >
+                <Image
+                  src={heroMain}
+                  alt="Engineering Software"
+                  width={600}
+                  height={400}
+                  className="w-full h-auto object-cover"
+                  priority
+                />
+              </div>
             </div>
 
-            {/* Floating Elements */}
+            {/* Floating Element */}
             <div
-              className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-linear-to-br from-yellow-400 to-orange-500 shadow-lg shadow-orange-500/50 flex items-center justify-center animate-float"
-              style={{ boxShadow: '0 0 30px rgba(251, 191, 36, 0.6)' }}
+              className="absolute -top-6 -right-6 w-20 h-20 rounded-2xl flex items-center justify-center animate-float"
+              style={{ background: '#A8E6FF', border: '3px solid #1a1a2e', boxShadow: '4px 4px 0 #1a1a2e' }}
             >
-              <Sparkles className="w-10 h-10 text-white" />
+              <Sparkles className="w-10 h-10" style={{ color: '#1a1a2e' }} />
             </div>
           </div>
         </div>

@@ -29,26 +29,34 @@ export default function DashboardCertificatesPage() {
   }, [])
 
   if (loading) {
-    return <div className="flex h-72 items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-purple-600" /></div>
+    return (
+      <div className="flex h-72 items-center justify-center">
+        <div className="w-12 h-12 rounded-2xl bg-neo-yellow border-3 border-neo-black flex items-center justify-center animate-neo-bounce" style={{boxShadow:'3px 3px 0 #1a1a2e'}}>
+          <Loader2 className="h-6 w-6 animate-spin text-neo-black" />
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-10">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900" style={{ ...outfit, fontWeight: 800 }}>My Certificates</h1>
-        <p className="mt-2 text-sm text-gray-500" style={poppins}>
+        <h1 className="text-3xl font-extrabold text-neo-black" style={{ ...outfit, fontWeight: 800 }}>My Certificates</h1>
+        <p className="mt-2 text-sm text-neo-black/60 font-semibold" style={poppins}>
           Download your issued certificates and verify their current status.
         </p>
       </div>
 
       {certificates.length === 0 ? (
-        <div className="rounded-3xl border border-gray-100 bg-white p-12 text-center shadow-sm">
-          <Award className="mx-auto mb-4 h-10 w-10 text-gray-300" />
-          <p className="text-sm text-gray-500" style={poppins}>No certificates issued yet.</p>
+        <div className="neo-card-static p-12 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-neo-lavender border-3 border-neo-black flex items-center justify-center mx-auto mb-4" style={{boxShadow:'3px 3px 0 #1a1a2e'}}>
+            <Award className="h-8 w-8 text-neo-black" />
+          </div>
+          <p className="text-sm text-neo-black/50 font-bold" style={poppins}>No certificates issued yet.</p>
           <div className="mt-6">
             <Link
               href="/verify"
-              className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2.5 text-sm text-gray-700 transition hover:border-purple-200 hover:text-purple-600"
+              className="neo-btn neo-btn-blue inline-flex items-center gap-2 px-4 py-2.5 text-sm"
               style={poppins}
             >
               <ShieldCheck className="h-4 w-4" />
@@ -60,13 +68,13 @@ export default function DashboardCertificatesPage() {
         <>
           <div className="grid gap-5 lg:grid-cols-2">
             {certificates.map((certificate) => (
-              <div key={certificate.id} className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
+              <div key={certificate.id} className="neo-card-static p-6">
               <div className="mb-4 flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.2em] text-gray-400" style={poppins}>Certificate ID</p>
-                  <p className="mt-2 text-lg font-semibold text-gray-900" style={outfit}>{certificate.certificateId}</p>
+                  <p className="text-xs uppercase tracking-[0.2em] text-neo-black/40 font-bold" style={poppins}>Certificate ID</p>
+                  <p className="mt-2 text-lg font-extrabold text-neo-black" style={outfit}>{certificate.certificateId}</p>
                 </div>
-                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${certificate.isRevoked ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`} style={poppins}>
+                <span className={`neo-badge ${certificate.isRevoked ? 'bg-neo-coral' : 'bg-neo-green'}`} style={poppins}>
                   {certificate.isRevoked ? 'Revoked' : 'Issued'}
                 </span>
               </div>
@@ -83,19 +91,19 @@ export default function DashboardCertificatesPage() {
               </div>
 
               {certificate.isRevoked && certificate.revocationReason && (
-                <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" style={poppins}>
-                  <div className="flex items-center gap-2 font-semibold">
+                <div className="mt-4 rounded-2xl bg-neo-coral px-4 py-3 text-sm text-neo-black border-2 border-neo-black" style={poppins}>
+                  <div className="flex items-center gap-2 font-extrabold">
                     <Ban className="h-4 w-4" />
                     Revoked
                   </div>
-                  <p className="mt-2">{certificate.revocationReason}</p>
+                  <p className="mt-2 font-semibold">{certificate.revocationReason}</p>
                 </div>
               )}
 
               <div className="mt-5 flex flex-wrap gap-3">
                 <Link
                   href={`/verify/${certificate.certificateId}`}
-                  className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2.5 text-sm text-gray-700 transition hover:border-purple-200 hover:text-purple-600"
+                  className="neo-btn bg-neo-sky inline-flex items-center gap-2 px-4 py-2.5 text-sm"
                   style={poppins}
                 >
                   <ShieldCheck className="h-4 w-4" />
@@ -107,8 +115,8 @@ export default function DashboardCertificatesPage() {
                     download
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-2 rounded-2xl bg-linear-to-r from-purple-600 to-blue-600 px-4 py-2.5 text-sm text-white transition hover:shadow-lg"
-                    style={{ ...poppins, fontWeight: 600 }}
+                    className="neo-btn neo-btn-primary inline-flex items-center gap-2 px-4 py-2.5 text-sm"
+                    style={{ ...poppins, fontWeight: 700 }}
                   >
                     <Download className="h-4 w-4" />
                     Download PDF
@@ -121,7 +129,7 @@ export default function DashboardCertificatesPage() {
           <div className="mt-8 flex justify-center">
             <Link
               href="/verify"
-              className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2.5 text-sm text-gray-700 transition hover:border-purple-200 hover:text-purple-600"
+              className="neo-btn neo-btn-blue inline-flex items-center gap-2 px-4 py-2.5 text-sm"
               style={poppins}
             >
               <ShieldCheck className="h-4 w-4" />
@@ -136,9 +144,9 @@ export default function DashboardCertificatesPage() {
 
 function InfoItem({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl bg-gray-50 p-4">
-      <p className="text-xs uppercase tracking-[0.2em] text-gray-400" style={poppins}>{label}</p>
-      <p className="mt-2 text-sm font-semibold text-gray-900" style={poppins}>{value}</p>
+    <div className="rounded-2xl bg-neo-cream p-4 border-2 border-neo-black">
+      <p className="text-xs uppercase tracking-[0.2em] text-neo-black/40 font-bold" style={poppins}>{label}</p>
+      <p className="mt-2 text-sm font-extrabold text-neo-black" style={poppins}>{value}</p>
     </div>
   )
 }

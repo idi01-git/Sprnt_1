@@ -18,13 +18,13 @@ import { Enrollment, getEnrollments } from '@/lib/api'
 const poppins: React.CSSProperties = { fontFamily: "'Poppins', sans-serif" }
 const outfit: React.CSSProperties = { fontFamily: "'Outfit', sans-serif" }
 
-const branchGradients: Record<string, string> = {
-  Chemical: 'from-pink-500 to-rose-500',
-  Civil: 'from-emerald-500 to-teal-500',
-  Mechanical: 'from-purple-500 to-indigo-500',
-  Electrical: 'from-blue-500 to-cyan-500',
-  ECE: 'from-red-500 to-pink-500',
-  CS_IT: 'from-green-500 to-emerald-500',
+const branchColors: Record<string, { bg: string; border: string }> = {
+  Chemical: { bg: 'bg-neo-pink', border: 'border-neo-pink' },
+  Civil: { bg: 'bg-neo-green', border: 'border-neo-green' },
+  Mechanical: { bg: 'bg-neo-purple', border: 'border-neo-purple' },
+  Electrical: { bg: 'bg-neo-blue', border: 'border-neo-blue' },
+  ECE: { bg: 'bg-neo-coral', border: 'border-neo-coral' },
+  CS_IT: { bg: 'bg-neo-yellow', border: 'border-neo-yellow' },
 }
 
 export function MyLearningView() {
@@ -67,24 +67,20 @@ export function MyLearningView() {
         <div className="mx-auto max-w-6xl animate-pulse">
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <div className="mb-2 h-9 w-52 rounded-lg bg-gray-200" />
-              <div className="h-4 w-36 rounded bg-gray-100" />
+              <div className="mb-2 h-9 w-52 rounded-lg bg-neo-yellow/50 border-2 border-neo-black" />
+              <div className="h-4 w-36 rounded bg-neo-peach/50 border-2 border-neo-black" />
             </div>
             <div className="flex gap-2">
-              {[...Array(3)].map((_, index) => <div key={index} className="h-9 w-24 rounded-xl bg-gray-100" />)}
+              {[...Array(3)].map((_, index) => <div key={index} className="h-9 w-24 rounded-xl bg-neo-mint/50 border-2 border-neo-black" />)}
             </div>
           </div>
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
             {[...Array(6)].map((_, index) => (
-              <div key={index} className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-                <div className="mb-4 h-12 w-12 rounded-xl bg-gray-200" />
-                <div className="mb-2 h-5 w-3/4 rounded bg-gray-200" />
-                <div className="mb-4 h-3.5 w-1/2 rounded bg-gray-100" />
-                <div className="mb-2 h-2 rounded-full bg-gray-100" />
-                <div className="flex justify-between">
-                  <div className="h-3 w-16 rounded bg-gray-100" />
-                  <div className="h-3 w-20 rounded bg-gray-100" />
-                </div>
+              <div key={index} className="rounded-2xl border-3 border-neo-black bg-white p-5" style={{boxShadow:'5px 5px 0 #1a1a2e'}}>
+                <div className="mb-4 h-12 w-12 rounded-xl bg-neo-yellow/50 border-2 border-neo-black" />
+                <div className="mb-2 h-5 w-3/4 rounded bg-neo-lavender/50" />
+                <div className="mb-4 h-3.5 w-1/2 rounded bg-neo-sky/50" />
+                <div className="mb-2 h-4 rounded-full bg-neo-cream border-2 border-neo-black" />
               </div>
             ))}
           </div>
@@ -96,16 +92,18 @@ export function MyLearningView() {
   if (error) {
     return (
       <div className="flex min-h-screen items-center justify-center pt-24">
-        <div className="flex max-w-md flex-col items-center gap-4 text-center">
-          <AlertCircle className="h-12 w-12 text-red-400" />
-          <h2 className="text-2xl font-bold text-gray-900" style={{ ...outfit, fontWeight: 800 }}>
+        <div className="neo-card-static flex max-w-md flex-col items-center gap-4 text-center p-8">
+          <div className="w-16 h-16 rounded-2xl bg-neo-coral border-3 border-neo-black flex items-center justify-center" style={{boxShadow:'3px 3px 0 #1a1a2e'}}>
+            <AlertCircle className="h-8 w-8 text-neo-black" />
+          </div>
+          <h2 className="text-2xl font-extrabold text-neo-black" style={{ ...outfit, fontWeight: 800 }}>
             {error.includes('log in') ? 'Login Required' : 'Error'}
           </h2>
-          <p className="text-gray-500" style={{ ...poppins, fontSize: '15px' }}>{error}</p>
+          <p className="text-neo-black/70 font-medium" style={{ ...poppins, fontSize: '15px' }}>{error}</p>
           <Link
             href="/dashboard"
-            className="rounded-xl bg-linear-to-r from-purple-600 to-blue-600 px-6 py-3 text-white transition-all hover:shadow-lg"
-            style={{ ...poppins, fontWeight: 600 }}
+            className="neo-btn neo-btn-primary px-6 py-3"
+            style={{ ...poppins, fontWeight: 700 }}
           >
             Back to Explore
           </Link>
@@ -118,21 +116,21 @@ export function MyLearningView() {
     return (
       <div className="min-h-screen px-6 pt-24">
         <div className="mx-auto max-w-4xl py-20 text-center">
-          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-purple-100">
-            <BookOpen className="h-10 w-10 text-purple-600" />
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-neo-lavender border-3 border-neo-black" style={{boxShadow:'5px 5px 0 #1a1a2e'}}>
+            <BookOpen className="h-10 w-10 text-neo-black" />
           </div>
-          <h2 className="mb-3 text-3xl font-bold text-gray-900" style={{ ...outfit, fontWeight: 800 }}>
+          <h2 className="mb-3 text-3xl font-extrabold text-neo-black" style={{ ...outfit, fontWeight: 800 }}>
             No courses yet
           </h2>
-          <p className="mb-8 text-gray-500" style={{ ...poppins, fontSize: '16px' }}>
+          <p className="mb-8 text-neo-black/70 font-medium" style={{ ...poppins, fontSize: '16px' }}>
             Browse the catalog and enroll in your first course to get started.
           </p>
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-purple-600 to-blue-600 px-8 py-4 text-white transition-all hover:shadow-lg"
-            style={{ ...poppins, fontWeight: 600 }}
+            className="neo-btn neo-btn-primary inline-flex items-center gap-2 px-8 py-4"
+            style={{ ...poppins, fontWeight: 700 }}
           >
-            <Sparkles className="h-5 w-5" /> Explore Courses
+            <Sparkles className="h-5 w-5" /> EXPLORE COURSES
           </Link>
         </div>
       </div>
@@ -143,59 +141,59 @@ export function MyLearningView() {
     <div className="min-h-screen px-6 pb-16 pt-24">
       <div className="mx-auto max-w-5xl">
         <div className="mb-8">
-          <h1 className="mb-2 text-3xl font-bold text-gray-900 md:text-4xl" style={{ ...outfit, fontWeight: 800 }}>
+          <h1 className="mb-2 text-3xl font-extrabold text-neo-black md:text-4xl" style={{ ...outfit, fontWeight: 800 }}>
             My Learning
           </h1>
-          <p className="text-gray-500" style={{ ...poppins, fontSize: '15px' }}>
+          <p className="text-neo-black/70 font-medium" style={{ ...poppins, fontSize: '15px' }}>
             Track your progress across all enrolled courses.
           </p>
         </div>
 
-        <div className="mb-8 flex gap-2">
-          {(['all', 'in_progress', 'completed'] as const).map((nextTab) => (
-            <button
-              key={nextTab}
-              onClick={() => setTab(nextTab)}
-              className={`rounded-xl px-5 py-2.5 text-sm transition-all ${
-                tab === nextTab
-                  ? 'bg-linear-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/30'
-                  : 'border border-gray-200 bg-white text-gray-600 hover:border-purple-200'
-              }`}
-              style={{ ...poppins, fontWeight: 600 }}
-            >
-              {nextTab === 'all' ? 'All Courses' : nextTab === 'in_progress' ? 'In Progress' : 'Completed'}
-            </button>
-          ))}
+        <div className="mb-8 flex gap-3">
+          {(['all', 'in_progress', 'completed'] as const).map((nextTab) => {
+            const isActive = tab === nextTab
+            const colors = nextTab === 'all' ? 'bg-neo-yellow' : nextTab === 'in_progress' ? 'bg-neo-blue' : 'bg-neo-green'
+            return (
+              <button
+                key={nextTab}
+                onClick={() => setTab(nextTab)}
+                className={`neo-tab ${isActive ? `neo-tab-active ${colors}` : 'bg-white'}`}
+                style={{ ...poppins, fontWeight: 700 }}
+              >
+                {nextTab === 'all' ? 'All Courses' : nextTab === 'in_progress' ? 'In Progress' : 'Completed'}
+              </button>
+            )
+          })}
         </div>
 
         <div className="grid gap-6">
           {filtered.map((enrollment) => {
-            const gradient = branchGradients[enrollment.affiliatedBranch] || 'from-gray-500 to-slate-500'
+            const colors = branchColors[enrollment.affiliatedBranch] || { bg: 'bg-neo-orange', border: 'border-neo-orange' }
             const progress = Math.round((enrollment.daysCompleted / enrollment.totalDays) * 100)
 
             return (
               <div
                 key={enrollment.id}
-                className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all hover:shadow-md"
+                className="neo-card overflow-hidden"
               >
                 <div className="flex flex-col md:flex-row">
-                  <div className={`w-full shrink-0 bg-linear-to-b md:w-2 ${gradient}`} />
+                  <div className={`w-full shrink-0 md:w-3 ${colors.bg}`} />
 
                   <div className="flex-1 p-6">
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                       <div className="flex-1">
                         <span
-                          className="mb-2 inline-block rounded-full bg-purple-50 px-3 py-1 text-xs text-purple-700"
-                          style={{ ...poppins, fontWeight: 600 }}
+                          className={`neo-badge mb-2 ${colors.bg}`}
+                          style={{ ...poppins }}
                         >
                           {enrollment.affiliatedBranch}
                         </span>
 
-                        <h3 className="mb-2 text-xl font-bold text-gray-900" style={{ ...outfit, fontWeight: 700 }}>
+                        <h3 className="mb-2 text-xl font-extrabold text-neo-black" style={{ ...outfit, fontWeight: 800 }}>
                           {enrollment.courseName}
                         </h3>
 
-                        <div className="mb-4 flex flex-wrap gap-4 text-sm text-gray-500" style={poppins}>
+                        <div className="mb-4 flex flex-wrap gap-4 text-sm text-neo-black/70 font-semibold" style={poppins}>
                           <span className="flex items-center gap-1">
                             <Calendar className="h-4 w-4" />
                             Enrolled {new Date(enrollment.enrolledAt).toLocaleDateString()}
@@ -210,34 +208,34 @@ export function MyLearningView() {
                           </span>
                         </div>
 
-                        <div className="mb-1 h-2.5 w-full max-w-md rounded-full bg-gray-100">
-                          <div className={`h-full rounded-full bg-linear-to-r ${gradient}`} style={{ width: `${progress}%` }} />
+                        <div className="neo-progress mb-1 w-full max-w-md">
+                          <div className={`neo-progress-bar ${colors.bg}`} style={{ width: `${progress}%` }} />
                         </div>
-                        <p className="text-xs text-gray-400" style={poppins}>{progress}% complete</p>
+                        <p className="text-xs text-neo-black/60 font-bold" style={poppins}>{progress}% complete</p>
                       </div>
 
                       <div className="flex flex-col gap-2">
-                        <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5">
-                          <p className="mb-0.5 text-xs text-gray-500" style={poppins}>Enrollment ID</p>
-                          <p className="truncate text-sm font-bold text-gray-800" style={poppins} title={enrollment.id}>
+                        <div className="rounded-xl border-2 border-neo-black bg-neo-cream px-4 py-2.5">
+                          <p className="mb-0.5 text-xs text-neo-black/60 font-bold" style={poppins}>Enrollment ID</p>
+                          <p className="truncate text-sm font-extrabold text-neo-black" style={poppins} title={enrollment.id}>
                             {enrollment.id}
                           </p>
                         </div>
 
                         {enrollment.certificateIssued ? (
-                          <span className="inline-flex items-center gap-1.5 rounded-xl bg-green-50 px-4 py-2.5 text-sm text-green-700" style={{ ...poppins, fontWeight: 600 }}>
+                          <span className="neo-badge bg-neo-green gap-1.5 px-4 py-2.5 text-sm" style={{ ...poppins, fontWeight: 700 }}>
                             <Award className="h-4 w-4" /> Certified
                           </span>
                         ) : enrollment.status === 'completed' ? (
-                          <span className="inline-flex items-center gap-1.5 rounded-xl bg-blue-50 px-4 py-2.5 text-sm text-blue-700" style={{ ...poppins, fontWeight: 600 }}>
+                          <span className="neo-badge bg-neo-sky gap-1.5 px-4 py-2.5 text-sm" style={{ ...poppins, fontWeight: 700 }}>
                             <CheckCircle2 className="h-4 w-4" /> Completed
                           </span>
                         ) : null}
 
                         {enrollment.certificateIssued && enrollment.certificateId && (
-                          <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5">
-                            <p className="mb-0.5 text-xs text-gray-500" style={poppins}>Certificate ID</p>
-                            <p className="truncate text-sm font-bold text-gray-800" style={poppins} title={enrollment.certificateId}>
+                          <div className="rounded-xl border-2 border-neo-black bg-neo-cream px-4 py-2.5">
+                            <p className="mb-0.5 text-xs text-neo-black/60 font-bold" style={poppins}>Certificate ID</p>
+                            <p className="truncate text-sm font-extrabold text-neo-black" style={poppins} title={enrollment.certificateId}>
                               {enrollment.certificateId}
                             </p>
                           </div>
@@ -245,8 +243,8 @@ export function MyLearningView() {
 
                         <Link
                           href={`/learn/${enrollment.id}/day/${enrollment.currentDay}`}
-                          className="inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-purple-600 to-blue-600 px-5 py-2.5 text-sm text-white transition-all hover:shadow-lg"
-                          style={{ ...poppins, fontWeight: 600 }}
+                          className="neo-btn neo-btn-primary inline-flex items-center gap-2 px-5 py-2.5 text-sm"
+                          style={{ ...poppins, fontWeight: 700 }}
                         >
                           Continue <ArrowRight className="h-4 w-4" />
                         </Link>
